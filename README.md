@@ -4,7 +4,7 @@
 
 ## Features
 - **Timer**: Set total time, yellow warning, and red warning durations.
-- **Color Alerts like a traffic light:**
+- **Color alerts like a traffic light:**
   - **Green**: Time remaining.
   - **Yellow**: Warning phase.
   - **Red**: Critical or overtime.
