@@ -3,14 +3,14 @@
 **OnTime** is a simple app for managing time during live events, presentations, and speeches. It provides clear, color-coded alerts to help speakers stay on track.
 
 ## Features
-- **Customizable Timing**: Set total time, yellow warning, and red warning durations.
-- Color Alerts:
+- **Timer**: Set total time, yellow warning, and red warning durations.
+- **Color Alerts like a traffic light:**
   - **Green**: Time remaining.
   - **Yellow**: Warning phase.
   - **Red**: Critical or overtime.
-- Pause and Resume
+- **Pause and Resume**
 - **Overtime Timer**: Shows time over the set amount.
-- Saved Settings: Retains your preferences between sessions.
+- **Saved Settings**: Retains your preferences between sessions.
 
 ## Usage
 1. Set your desired total, yellow, and red warning times.
