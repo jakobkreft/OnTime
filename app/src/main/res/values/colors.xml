@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="timer_green">#47863E</color> <!-- Replace with your desired green shade -->
+    <color name="timer_yellow">#D7A614</color> <!-- Replace with your desired yellow shade -->
+    <color name="timer_red">#B31212</color> <!-- Replace with your desired red shade -->
 </resources>

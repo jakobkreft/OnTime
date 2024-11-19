@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="@drawable/about_bg"
     tools:context=".AboutActivity">
 
     <ScrollView
@@ -18,26 +18,30 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="80dp" />
-
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="24dp"
+                android:background="@drawable/about_bg"
+                android:paddingLeft="16dp"
+                android:paddingTop="90dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp"
                 android:text="About"
                 android:textColor="#FFFFFF"
-                android:textSize="34sp" />
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="24dp"
-                android:text=""
+                android:autoLink="web"
+                android:background="@color/black"
+                android:linksClickable="true"
+                android:padding="16dp"
+                android:text="@string/AboutContentString"
                 android:textColor="#FFFFFF"
+                android:textColorLink="#65E943"
                 android:textSize="16sp" />
 
             <ImageButton
@@ -63,4 +67,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_back" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="130dp"
+        android:layout_height="35dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ontime_logo_white" />
 </androidx.constraintlayout.widget.ConstraintLayout>

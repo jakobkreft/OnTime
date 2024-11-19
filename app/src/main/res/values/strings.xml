@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">OnTime</string>
+    <string name="AboutContentString"><string name="AboutContentString">
+<b>Source Code:</b> https://github.com/jakobkreft/OnTime
+\n\n
+<b>Feedback:</b> Please share your feedback here: https://github.com/jakobkreft/OnTime/issues/new/choose
+\n\n
+Thank you!
+\n\n
+OnTime is a simple app for managing time during live events, presentations, and speeches. It provides clear, color-coded alerts to help speakers stay on track.
+\n\n
+<b>Features:</b>\n
+- <b>Timer</b>: Set total time, yellow warning, and red warning durations.\n
+- <b>Color alerts like a traffic light</b>:
+  - Green: Time remaining.
+  - Yellow: Warning phase.
+  - Red: Critical or overtime.\n
+- <b>*Pause and Resume</b>\n
+- <b>Overtime Timer</b>:  Shows time over the set amount.\n
+- <b>Saved Settings</b>: Retains your preferences between sessions.\n
+\n\n
+<b>License:</b> This project is licensed under the GPL-3.0-or-later. See https://github.com/jakobkreft/OnTime/master/LICENSE for details.
+\n\n
+Developed by Jakob Kreft.
+</string>
+</string>
 </resources>

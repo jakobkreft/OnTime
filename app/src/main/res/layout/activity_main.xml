@@ -25,17 +25,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/titleText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="OnTime"
-                android:textAlignment="center"
-                android:textColor="#66FFFFFF"
-                android:textSize="24sp"
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="130dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ontime_logo_white" />
 
             <TextView
                 android:id="@+id/textView"
@@ -44,15 +42,16 @@
                 android:gravity="center"
                 android:paddingBottom="20sp"
                 android:text="Presentation Timer for Live Events"
-                android:textColor="#66FFFFFF"
+                android:textColor="#D6FFFFFF"
+                android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/titleText" />
+                app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
             <ImageButton
                 android:id="@+id/AboutButton"
-                android:layout_width="50dp"
-                android:layout_height="70dp"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
                 android:layout_gravity="right"
                 android:backgroundTint="#00FFFFFF"
                 android:contentDescription="about"
@@ -92,7 +91,7 @@
             android:id="@+id/yellowWarningLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Orange Warning (Time Remaining):"
+            android:text="Yellow Warning (Time Remaining):"
             android:textColor="#B3FFFFFF"
             android:textSize="16sp" />
 
@@ -140,30 +139,38 @@
 
 
         <!-- Red Warning Description -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <TextView
             android:id="@+id/redDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="16dp"
             android:text="Time left till end"
             android:textColor="#B3FFFFFF"
             android:textSize="14sp" />
 
         <!-- Timer Text -->
+
         <TextView
             android:id="@+id/timerText"
             android:layout_width="343dp"
-            android:layout_height="168dp"
-            android:fontFamily="s"
+            android:layout_height="181dp"
             android:text="12:25:19"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            app:autoSizeMaxTextSize="100sp"
+            app:autoSizeMaxTextSize="200sp"
             app:autoSizeMinTextSize="10sp"
             app:autoSizeStepGranularity="2sp"
             app:autoSizeTextType="uniform" />
 
 
         <!-- Overtime Text -->
+
         <TextView
             android:id="@+id/overtimeText"
             android:layout_width="wrap_content"
@@ -173,7 +180,7 @@
             android:text="+00:00"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="24sp" />
+            android:textSize="34sp" />
 
         <!-- Button Group -->
         <LinearLayout

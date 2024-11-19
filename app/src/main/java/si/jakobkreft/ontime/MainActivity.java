@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private long pausedTimeOffset = 0;
     private long overtimeStartInMillis = 0;
     private long pausedOvertimeOffset = 0; // New variable to track paused overtime duration
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         overtimeText = findViewById(R.id.overtimeText);
         playPauseButton = findViewById(R.id.playPauseButton);
         stopButton = findViewById(R.id.stopButton);
+        progressBar = findViewById(R.id.progressBar);
 
         // Load user input preferences
         loadPreferences();
@@ -88,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Add TextWatchers for immediate preference update
         setupTextWatchers();
+
     }
 
     private void setupTextWatchers() {
@@ -120,10 +124,17 @@ public class MainActivity extends AppCompatActivity {
         // Update the total time to the user input
         totalTimeInMillis = parseTimeInput(timeInput.getText().toString());
         updateTimerUI(totalTimeInMillis);
-        overtimeText.setAlpha(0);
-        findViewById(R.id.main).setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
+
+        // Hide the overtime text
+        overtimeText.setVisibility(View.GONE);
+
+        // Reset background and progress bar
+        findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_green));
+        progressBar.setProgress(0); // Reset progress bar
+
         playPauseButton.setImageResource(R.drawable.ic_play);
     }
+
 
     private void handlePlayPause() {
         if (!isRunning) {
@@ -187,15 +198,23 @@ public class MainActivity extends AppCompatActivity {
         startTimeInMillis = 0;
         pausedTimeOffset = 0;
         overtimeStartInMillis = 0;
+
+        // Reset UI elements
         playPauseButton.setImageResource(R.drawable.ic_play);
         stopButton.setEnabled(false);
         timerHandler.removeCallbacks(updateTimerRunnable);
-        findViewById(R.id.main).setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
+
+        // Reset background and progress bar
+        findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_green));
+        progressBar.setProgress(0); // Reset progress bar
+
+        // Hide the overtime text
+        overtimeText.setVisibility(View.GONE);
+
         updateTimerUI(0);
-        overtimeText.setAlpha(0);
+
         savePreferences();
     }
-
 
     private final Runnable updateTimerRunnable = new Runnable() {
         @Override
@@ -205,26 +224,38 @@ public class MainActivity extends AppCompatActivity {
 
             if (remainingTime > 0) {
                 updateTimerUI(remainingTime);
+
+                // Handle color changes based on remaining time
                 if (remainingTime <= redWarningTimeInMillis) {
-                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_red));
                 } else if (remainingTime <= yellowWarningTimeInMillis) {
-                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(android.R.color.holo_orange_dark));
+                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_yellow));
                 } else {
-                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
+                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_green));
                 }
+
                 timerHandler.postDelayed(this, 1000);
             } else {
+                // When the timer hits 0, explicitly change the background to red
                 if (overtimeStartInMillis == 0) {
+                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_red)); // Ensure red color at time 0
                     overtimeStartInMillis = System.currentTimeMillis();
-                    overtimeText.setAlpha(1);
+
+                    // Show the overtime text
+                    overtimeText.setVisibility(View.VISIBLE);
+                    overtimeText.setAlpha(1f); // Ensure the text is fully visible
+
                 }
-                // Calculate the elapsed overtime correctly using the current time and paused offset
+
+                // Update overtime
                 long overtimeElapsed = System.currentTimeMillis() - overtimeStartInMillis;
                 updateOvertimeUI(overtimeElapsed);
+
                 timerHandler.postDelayed(this, 1000);
             }
         }
     };
+
 
     private void updateOvertimeUI(long millis) {
         overtimeText.setText("+" + formatTime(millis));
@@ -244,7 +275,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private boolean parseAndValidateInput() {
         totalTimeInMillis = parseTimeInput(timeInput.getText().toString());
         yellowWarningTimeInMillis = parseTimeInput(yellowTimeInput.getText().toString());
@@ -253,6 +283,11 @@ public class MainActivity extends AppCompatActivity {
         if (totalTimeInMillis <= 0) {
             showToast("Total time must be greater than zero.");
             return false;
+        }
+
+        // If red warning time is 0 or empty, set it to trigger right before the timer ends
+        if (redWarningTimeInMillis == 0) {
+            redWarningTimeInMillis = 1; // Ensure it's set to the last millisecond
         }
 
         if (redWarningTimeInMillis >= yellowWarningTimeInMillis) {
@@ -272,11 +307,20 @@ public class MainActivity extends AppCompatActivity {
         if (millis <= 0) {
             millis = totalTimeInMillis;
         }
+
+        // Update the timer text
         timerText.setText(formatTime(millis));
+
+        // Update the progress bar
+        int progress = (int) ((totalTimeInMillis - millis + 1000) * 100 / totalTimeInMillis); // Calculate progress percentage
+        progressBar.setProgress(progress); // Set progress in the ProgressBar
     }
 
     private long parseTimeInput(String timeStr) {
         try {
+            if (timeStr == null || timeStr.isEmpty()) {
+                return 0; // Return 0 for empty input
+            }
             int hours = 0, minutes = 0, seconds = 0;
             String[] parts = timeStr.split(":");
             if (parts.length == 3) {
@@ -291,9 +335,10 @@ public class MainActivity extends AppCompatActivity {
             }
             return (hours * 3600 + minutes * 60 + seconds) * 1000;
         } catch (NumberFormatException e) {
-            return -1; // Invalid input, return -1 to indicate error
+            return 0; // Default to 0 if input is invalid
         }
     }
+
 
     private void savePreferences() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
