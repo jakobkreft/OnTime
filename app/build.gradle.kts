@@ -18,12 +18,20 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            vcsInfo.include = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+    }
+
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

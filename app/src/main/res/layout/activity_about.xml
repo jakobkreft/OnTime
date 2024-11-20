@@ -41,7 +41,7 @@
                 android:padding="16dp"
                 android:text="@string/AboutContentString"
                 android:textColor="#FFFFFF"
-                android:textColorLink="#65E943"
+                android:textColorLink="#A1E98F"
                 android:textSize="16sp" />
 
             <ImageButton
@@ -59,11 +59,11 @@
 
     <ImageButton
         android:id="@+id/backButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="77dp"
+        android:layout_height="77dp"
         android:backgroundTint="#00FFFFFF"
         android:contentDescription="back button"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_back" />

@@ -15,11 +15,11 @@ OnTime is a simple app for managing time during live events, presentations, and 
   - Green: Time remaining.
   - Yellow: Warning phase.
   - Red: Critical or overtime.\n
-- <b>*Pause and Resume</b>\n
+- <b>Pause and Resume</b>\n
 - <b>Overtime Timer</b>:  Shows time over the set amount.\n
 - <b>Saved Settings</b>: Retains your preferences between sessions.\n
 \n\n
-<b>License:</b> This project is licensed under the GPL-3.0-or-later. See https://github.com/jakobkreft/OnTime/master/LICENSE for details.
+<b>License:</b> This project is licensed under the GPL-3.0-or-later. See https://github.com/jakobkreft/OnTime/blob/master/LICENSE for details.
 \n\n
 Developed by Jakob Kreft.
 </string>
