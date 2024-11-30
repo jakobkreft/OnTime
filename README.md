@@ -4,6 +4,11 @@
 [<img width="100%" height="auto" src="fastlane/metadata/android/en-US/images/featureGraphic.jpg" alt="OnTime feature graphic" />](https://f-droid.org/packages/si.jakobkreft.ontime/)
 
 
+
+[<img src="https://f-droid.org/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">](https://f-droid.org/packages/si.jakobkreft.ontime) [<img height="80" src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"/>](https://github.com/jakobkreft/OnTime/releases/latest)
+
 **OnTime** is a simple app for managing time during live events, presentations, and speeches. It provides clear, color-coded alerts to help speakers stay on track.
 
 ## Features
