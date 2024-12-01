@@ -2,10 +2,12 @@ package si.jakobkreft.ontime;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -25,10 +27,16 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int FPS = 30;
+    private static final long COLOR_TRANSITION_TIME_IN_MILLIS = 1000;
     private static final String PREFS_NAME = "PresentationTimerPrefs";
     private static final String TOTAL_TIME_KEY = "totalTime";
     private static final String YELLOW_TIME_KEY = "yellowTime";
     private static final String RED_TIME_KEY = "redTime";
+
+    private Color yellowColor;
+    private Color redColor;
+    private Color greenColor;
 
     private EditText timeInput, yellowTimeInput, redTimeInput;
     private TextView timerText, overtimeText;
@@ -47,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        yellowColor = Color.valueOf(getResources().getColor(R.color.timer_yellow));
+        redColor    = Color.valueOf(getResources().getColor(R.color.timer_red));
+        greenColor  = Color.valueOf(getResources().getColor(R.color.timer_green));
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -228,13 +239,32 @@ public class MainActivity extends AppCompatActivity {
                 // Handle color changes based on remaining time
                 if (remainingTime <= redWarningTimeInMillis) {
                     findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_red));
+                    timerHandler.postDelayed(this, 1000);
                 } else if (remainingTime <= yellowWarningTimeInMillis) {
-                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_yellow));
-                } else {
-                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_green));
-                }
+                    long endTime = totalTimeInMillis - redWarningTimeInMillis;
+                    float colorFadePercent = getDifferenceInTimeAsPercentage( elapsedMillis,  endTime,  COLOR_TRANSITION_TIME_IN_MILLIS );
+                    Color fadedColor = colorFadeTo( yellowColor, redColor, colorFadePercent );
+                    findViewById(R.id.main).setBackgroundColor( fadedColor.toArgb() );
 
-                timerHandler.postDelayed(this, 1000);
+                    // Speed up the framerate when we get closer to the colour fade transition.
+                    if( remainingTime <= (redWarningTimeInMillis + COLOR_TRANSITION_TIME_IN_MILLIS + 1000) ) { // 1000 Millis added to start the animation early.
+                        timerHandler.postDelayed(this, 1000/FPS);
+                    } else {
+                        timerHandler.postDelayed(this, 1000);
+                    }
+                } else {
+                    long endTime = totalTimeInMillis - yellowWarningTimeInMillis;
+                    float colorFadePercent = getDifferenceInTimeAsPercentage( elapsedMillis,  endTime,  COLOR_TRANSITION_TIME_IN_MILLIS );
+                    Color fadedColor = colorFadeTo( greenColor, yellowColor, colorFadePercent );
+                    findViewById(R.id.main).setBackgroundColor( fadedColor.toArgb() );
+
+                    // Speed up the framerate when we get closer to the colour fade transition.
+                    if( remainingTime <= (yellowWarningTimeInMillis + COLOR_TRANSITION_TIME_IN_MILLIS + 1000) ) { // 1000 Millis added to start the animation early.
+                        timerHandler.postDelayed(this, 1000/FPS);
+                    } else {
+                        timerHandler.postDelayed(this, 1000);
+                    }
+                }
             } else {
                 // When the timer hits 0, explicitly change the background to red
                 if (overtimeStartInMillis == 0) {
@@ -256,6 +286,45 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
+    /**
+     * Fades from one color to another. The transition is linear.
+     * @param startColor
+     * @param endColor
+     * @param percent - should pass a float from 0.0 to 1.0
+     * @return
+     */
+    private Color colorFadeTo( Color startColor, Color endColor, float percent ) {
+        float red   = (1 - percent ) * startColor.red()   + percent * endColor.red();
+        float green = (1 - percent ) * startColor.green() + percent * endColor.green();
+        float blue  = (1 - percent ) * startColor.blue()  + percent * endColor.blue();
+
+        return Color.valueOf( red, green, blue );
+    }
+
+    /**
+     * This will return a percentage to transition from one time to another.
+     * @param startTime
+     * @param endTime
+     * @param transitionTime - how long before the end time we should start the animation.
+     * @return
+     */
+    private float getDifferenceInTimeAsPercentage( long startTime, long endTime, long transitionTime ) {
+            endTime        = Math.abs( endTime );
+            startTime      = Math.abs( startTime );
+            transitionTime = Math.abs( transitionTime );
+
+            if( startTime > endTime ) {
+                // Programmer passed variables in wrong order, so return 1.
+                Log.d("OnTime", "Warning: startTime is greater than endTime");
+                return 1;
+            } if( startTime >= (endTime - transitionTime) ) {
+                long delta = Math.abs(endTime - startTime);
+                return ( 1 - (delta / (float)transitionTime ) );
+            } else {
+                return 0;
+            }
+        }
 
     private void updateOvertimeUI(long millis) {
         overtimeText.setText("+" + formatTime(millis));
