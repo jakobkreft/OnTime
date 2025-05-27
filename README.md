@@ -4,6 +4,7 @@
 [<img width="100%" height="auto" src="fastlane/metadata/android/en-US/images/featureGraphic.jpg" alt="OnTime feature graphic" />](https://f-droid.org/packages/si.jakobkreft.ontime/)
 
 
+<!-- ![](https://api.visitorbadge.io/api/VisitorHit?user=jakobkreft&repo=OnTime&countColor=%237B1E7A)  -->
 
 [<img src="https://f-droid.org/badge/get-it-on.png"
     alt="Get it on F-Droid"
