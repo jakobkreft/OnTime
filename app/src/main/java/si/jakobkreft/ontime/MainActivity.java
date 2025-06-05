@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
         // Reset timer state on app start (fresh start)
         resetTimerState();
 
+        setupInputListeners();          // ← call THIS instead of setupTextWatchers()
+
         // Set initial button states
         stopButton.setEnabled(false);
 
@@ -90,29 +92,46 @@ public class MainActivity extends AppCompatActivity {
         stopButton.setOnClickListener(v -> handleStop());
 
         // Add TextWatchers for immediate preference update
-        setupTextWatchers();
-
     }
 
-    private void setupTextWatchers() {
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    /**
+     * Replaces setupTextWatchers().
+     *  • Saves prefs on every keystroke (TextWatcher)
+     *  • Re-parses & refreshes timer when the user leaves any EditText (OnFocusChange)
+     */
+    private void setupInputListeners() {
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+        // ---------- 1) save on each keystroke ----------
+        TextWatcher saver = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 savePreferences();
-                updateTimerUI(totalTimeInMillis);
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         };
+        timeInput.addTextChangedListener(saver);
+        yellowTimeInput.addTextChangedListener(saver);
+        redTimeInput.addTextChangedListener(saver);
 
-        timeInput.addTextChangedListener(textWatcher);
-        yellowTimeInput.addTextChangedListener(textWatcher);
-        redTimeInput.addTextChangedListener(textWatcher);
+        // ---------- 2) update display when editing is finished ----------
+        View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+            if (!hasFocus) {                      // user just left the field
+                totalTimeInMillis         = parseTimeInput(timeInput.getText().toString());
+                yellowWarningTimeInMillis = parseTimeInput(yellowTimeInput.getText().toString());
+                redWarningTimeInMillis    = parseTimeInput(redTimeInput.getText().toString());
+
+                savePreferences();               // persist clean values
+
+                if (totalTimeInMillis > 0) {     // avoid divide-by-zero
+                    updateTimerUI(totalTimeInMillis);
+                }
+            }
+        };
+        timeInput.setOnFocusChangeListener(focusListener);
+        yellowTimeInput.setOnFocusChangeListener(focusListener);
+        redTimeInput.setOnFocusChangeListener(focusListener);
     }
+
 
     private void resetTimerState() {
         startTimeInMillis = 0;
@@ -303,18 +322,23 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    // ---------- safety guard added at very top ----------
     private void updateTimerUI(long millis) {
-        if (millis <= 0) {
-            millis = totalTimeInMillis;
+
+        if (totalTimeInMillis <= 0) {            // nothing valid to display
+            timerText.setText("0");
+            progressBar.setProgress(0);
+            return;
         }
 
-        // Update the timer text
+        if (millis <= 0) { millis = totalTimeInMillis; }
+
         timerText.setText(formatTime(millis));
 
-        // Update the progress bar
-        int progress = (int) ((totalTimeInMillis - millis + 1000) * 100 / totalTimeInMillis); // Calculate progress percentage
-        progressBar.setProgress(progress); // Set progress in the ProgressBar
+        int progress = (int) ((totalTimeInMillis - millis + 1000) * 100 / totalTimeInMillis);
+        progressBar.setProgress(progress);
     }
+
 
     private long parseTimeInput(String timeStr) {
         try {

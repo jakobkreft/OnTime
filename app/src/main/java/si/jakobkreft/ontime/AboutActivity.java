@@ -1,7 +1,6 @@
 package si.jakobkreft.ontime;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
@@ -24,19 +23,9 @@ public class AboutActivity extends AppCompatActivity {
         });
 
         ImageButton logoButton = findViewById(R.id.logoButton);
-        logoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        logoButton.setOnClickListener(v -> finish());
 
         ImageButton backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();  // Closes this activity, returns to previous activity in the stack
-            }
-        });
+        backButton.setOnClickListener(v -> finish());
     }
 }
