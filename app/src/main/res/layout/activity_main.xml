@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_container"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,19 +10,23 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         style="@style/Widget.MaterialComponents.TabLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="12dp"
         android:layout_gravity="center"
-        app:tabIndicatorColor="?attr/colorPrimary"
-        app:tabIndicatorHeight="4dp"
-        app:tabIndicatorFullWidth="false"
-        app:tabSelectedTextColor="@android:color/transparent"
-        app:tabTextColor="@android:color/transparent"
+        android:background="#00FFFFFF"
         app:tabGravity="center"
-        app:tabMode="fixed"/>
+        app:tabIconTint="@color/white"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorColor="@color/white"
+        app:tabIndicatorFullWidth="false"
+        app:tabIndicatorHeight="5dp"
+        app:tabMode="fixed"
+        app:tabPaddingEnd="42dp"
+        app:tabPaddingStart="42dp"
+        app:tabTextColor="@android:color/transparent" />
 </LinearLayout>

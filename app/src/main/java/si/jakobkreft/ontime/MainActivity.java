@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
     /** Called by a TimerFragment when its fields change. */
     @Override
     public void onTimerChanged(int index, TimerModel updated) {
