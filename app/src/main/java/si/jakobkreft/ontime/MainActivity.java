@@ -1,6 +1,12 @@
 package si.jakobkreft.ontime;
 
+import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -93,4 +99,34 @@ public class MainActivity extends AppCompatActivity
                 && m.yellowMillis == DEFAULT_YELLOW
                 && m.redMillis    == DEFAULT_RED;
     }
+
+
+    /** Hide keyboard and drop focus when tapping outside any EditText */
+    private void hideKeyboardAndClearFocus() {
+        View focused = getCurrentFocus();
+        if (focused instanceof EditText) {
+            InputMethodManager imm =
+                    (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+            focused.clearFocus();
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View focused = getCurrentFocus();
+            if (focused instanceof EditText) {
+                // figure out if the touch was outside the focused EditText
+                Rect outRect = new Rect();
+                focused.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)ev.getRawX(), (int)ev.getRawY())) {
+                    hideKeyboardAndClearFocus();
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev);
+    }
 }
+
+

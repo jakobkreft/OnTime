@@ -74,13 +74,18 @@ public class TimerFragment extends Fragment {
                 updateTimerUI(remaining);
                 // pick color
                 @ColorInt int color;
-                if (remaining <= redWarningTimeInMillis) {
+
+                long redThreshold    = Math.max(0, redWarningTimeInMillis    + 1_000);
+                long yellowThreshold = Math.max(0, yellowWarningTimeInMillis + 1_000);
+
+                if (remaining <= redThreshold) {
                     color = ContextCompat.getColor(requireContext(), R.color.timer_red);
-                } else if (remaining <= yellowWarningTimeInMillis) {
+                } else if (remaining <= yellowThreshold) {
                     color = ContextCompat.getColor(requireContext(), R.color.timer_yellow);
                 } else {
                     color = ContextCompat.getColor(requireContext(), R.color.timer_green);
                 }
+
                 applyBackgroundColor(color);
 
                 timerHandler.postDelayed(this, 1000);
