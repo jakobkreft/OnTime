@@ -1,6 +1,7 @@
 package si.jakobkreft.ontime;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,7 +31,7 @@ import java.util.List;
 
 public class TimerFragment extends Fragment {
     private static final String ARG_INDEX       = "index";
-    private static final int    FLING_THRESHOLD = 200;
+    private static final int    FLING_THRESHOLD = 15;
 
     // Default presets
     private static final long DEFAULT_TOTAL  = 25 * 60 * 1000L;
@@ -49,7 +50,7 @@ public class TimerFragment extends Fragment {
     // UI refs
     private View        rootView;
     private ScrollView  contentView;
-    private Button      deleteBtn;
+    private ImageButton      deleteBtn;
     private EditText    timeInput, yellowTimeInput, redTimeInput;
     private ImageButton playPauseButton, stopButton;
     private ProgressBar progressBar;
@@ -142,6 +143,12 @@ public class TimerFragment extends Fragment {
         overtimeText      = rootView.findViewById(R.id.overtimeText);
         redDescription    = rootView.findViewById(R.id.redDescription);
 
+        ImageButton aboutButton = rootView.findViewById(R.id.AboutButton);
+        aboutButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), AboutActivity.class);
+            startActivity(intent);
+        });
+
         // initialize inputs
         timeInput.setText(formatTime(model.totalMillis));
         yellowTimeInput.setText(formatTime(model.yellowMillis));
@@ -205,20 +212,45 @@ public class TimerFragment extends Fragment {
     }
 
     private void setupInputListeners() {
-        TextWatcher tw = new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+        TextWatcher saver = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int st, int b, int c) {}
             @Override public void afterTextChanged(Editable s) {}
-            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {
+            @Override
+            public void onTextChanged(CharSequence s, int st, int b, int c) {
+                // keep model & prefs in sync
                 model.totalMillis  = parseTimeInput(timeInput.getText().toString());
                 model.yellowMillis = parseTimeInput(yellowTimeInput.getText().toString());
                 model.redMillis    = parseTimeInput(redTimeInput.getText().toString());
                 actions.onTimerChanged(index, model);
             }
         };
-        timeInput.addTextChangedListener(tw);
-        yellowTimeInput.addTextChangedListener(tw);
-        redTimeInput.addTextChangedListener(tw);
+
+        // apply to all three
+        timeInput.addTextChangedListener(saver);
+        yellowTimeInput.addTextChangedListener(saver);
+        redTimeInput.addTextChangedListener(saver);
+
+        View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+            if (!hasFocus) {
+                // user just left an input → re‐parse & update UI immediately
+                totalTimeInMillis        = parseTimeInput(timeInput.getText().toString());
+                yellowWarningTimeInMillis = parseTimeInput(yellowTimeInput.getText().toString());
+                redWarningTimeInMillis    = parseTimeInput(redTimeInput.getText().toString());
+
+                // refresh the large timer text + progress bar + background color
+                updateTimerUI(totalTimeInMillis);
+
+                // you may also want to re‐apply the last color if thresholds moved:
+                // long colorThreshold = remaining logic...
+                // applyBackgroundColor( currentBgColor );
+            }
+        };
+
+        timeInput.setOnFocusChangeListener(focusListener);
+        yellowTimeInput.setOnFocusChangeListener(focusListener);
+        redTimeInput.setOnFocusChangeListener(focusListener);
     }
+
 
     private void resetTimerState() {
         // reset flags & offsets
@@ -240,24 +272,46 @@ public class TimerFragment extends Fragment {
     }
 
     private void setupDeleteGesture() {
-        GestureDetector gd = new GestureDetector(requireContext(),
-                new GestureDetector.SimpleOnGestureListener() {
-                    @Override public boolean onFling(MotionEvent e1, MotionEvent e2,
-                                                     float vx, float vy) {
-                        float dy = e2.getY() - e1.getY();
-                        if (Math.abs(dy) < FLING_THRESHOLD) return false;
+        contentView.setOnTouchListener(new View.OnTouchListener() {
+            float startY;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent ev) {
+                switch (ev.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startY = ev.getY();
+                        // If user had revealed delete but didn’t actually cancel yet,
+                        // immediately reset on next touch-down.
+                        if (pendingDelete) {
+                            pendingDelete = false;
+                            // animate back up
+                            rootView.animate()
+                                    .translationY(0f)
+                                    .setDuration(200)
+                                    .withEndAction(() -> deleteBtn.setVisibility(View.GONE))
+                                    .start();
+                            // don’t treat this as a swipe
+                            return false;
+                        }
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        float dy = ev.getY() - startY;
                         List<TimerModel> all = PreferencesManager.loadTimers(requireContext());
                         boolean canDelete = all.size() > 1 && !isDefault(model);
 
-                        if (dy < 0 && canDelete && !pendingDelete) {
+                        // reveal delete on upward drag beyond threshold
+                        if (dy < -FLING_THRESHOLD && canDelete && !pendingDelete) {
                             pendingDelete = true;
                             deleteBtn.setVisibility(View.VISIBLE);
                             rootView.animate()
-                                    .translationY(-rootView.getHeight() / 2f)
+                                    .translationY(-rootView.getHeight() / 3f)
                                     .setDuration(300)
                                     .start();
-                            return true;
-                        } else if (dy > 0 && pendingDelete) {
+                            return true;  // consume so ViewPager2 won’t steal it
+                        }
+                        // cancel delete on downward drag beyond threshold
+                        else if (dy > FLING_THRESHOLD && pendingDelete) {
                             pendingDelete = false;
                             rootView.animate()
                                     .translationY(0f)
@@ -266,11 +320,12 @@ public class TimerFragment extends Fragment {
                                     .start();
                             return true;
                         }
-                        return false;
-                    }
-                });
-
-        contentView.setOnTouchListener((v, ev) -> gd.onTouchEvent(ev));
+                        break;
+                }
+                // Let ViewPager2 handle everything else (pure taps, small moves)
+                return false;
+            }
+        });
 
         deleteBtn.setOnClickListener(v -> {
             rootView.animate()
