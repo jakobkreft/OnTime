@@ -1,415 +1,95 @@
 package si.jakobkreft.ontime;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.List;
+public class MainActivity extends AppCompatActivity
+        implements TimerFragment.TimerActions {
 
-    private static final String PREFS_NAME = "PresentationTimerPrefs";
-    private static final String TOTAL_TIME_KEY = "totalTime";
-    private static final String YELLOW_TIME_KEY = "yellowTime";
-    private static final String RED_TIME_KEY = "redTime";
+    // Default thresholds in milliseconds
+    private static final long DEFAULT_TOTAL  = 25 * 60 * 1000L;
+    private static final long DEFAULT_YELLOW = 10 * 60 * 1000L;
+    private static final long DEFAULT_RED    = 5  * 60 * 1000L;
 
-    private EditText timeInput, yellowTimeInput, redTimeInput;
-    private TextView timerText, overtimeText;
-    private ImageButton playPauseButton, stopButton;
-
-    private Handler timerHandler = new Handler();
-    private long totalTimeInMillis, yellowWarningTimeInMillis, redWarningTimeInMillis;
-    private long startTimeInMillis;
-    private boolean isRunning = false;
-    private boolean isPaused = false;
-    private long pausedTimeOffset = 0;
-    private long overtimeStartInMillis = 0;
-    private long pausedOvertimeOffset = 0; // New variable to track paused overtime duration
-    private ProgressBar progressBar;
+    private ViewPager2        viewPager;
+    private TimerPagerAdapter adapter;
+    private List<TimerModel>  timers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // Handle system window insets
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        ImageButton aboutButton = findViewById(R.id.AboutButton);
-        aboutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
-                startActivity(intent);
-            }
-        });
-        // Initialize UI elements
-        timeInput = findViewById(R.id.timeInput);
-        yellowTimeInput = findViewById(R.id.yellowTime);
-        redTimeInput = findViewById(R.id.redTime);
-        timerText = findViewById(R.id.timerText);
-        overtimeText = findViewById(R.id.overtimeText);
-        playPauseButton = findViewById(R.id.playPauseButton);
-        stopButton = findViewById(R.id.stopButton);
-        progressBar = findViewById(R.id.progressBar);
-
-        // Load user input preferences
-        loadPreferences();
-
-        // Reset timer state on app start (fresh start)
-        resetTimerState();
-
-        setupInputListeners();          // ← call THIS instead of setupTextWatchers()
-
-        // Set initial button states
-        stopButton.setEnabled(false);
-
-        // Set click listeners
-        playPauseButton.setOnClickListener(v -> handlePlayPause());
-        stopButton.setOnClickListener(v -> handleStop());
-
-        // Add TextWatchers for immediate preference update
-    }
-
-    /**
-     * Replaces setupTextWatchers().
-     *  • Saves prefs on every keystroke (TextWatcher)
-     *  • Re-parses & refreshes timer when the user leaves any EditText (OnFocusChange)
-     */
-    private void setupInputListeners() {
-
-        // ---------- 1) save on each keystroke ----------
-        TextWatcher saver = new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                savePreferences();
-            }
-            @Override public void afterTextChanged(Editable s) {}
-        };
-        timeInput.addTextChangedListener(saver);
-        yellowTimeInput.addTextChangedListener(saver);
-        redTimeInput.addTextChangedListener(saver);
-
-        // ---------- 2) update display when editing is finished ----------
-        View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
-            if (!hasFocus) {                      // user just left the field
-                totalTimeInMillis         = parseTimeInput(timeInput.getText().toString());
-                yellowWarningTimeInMillis = parseTimeInput(yellowTimeInput.getText().toString());
-                redWarningTimeInMillis    = parseTimeInput(redTimeInput.getText().toString());
-
-                savePreferences();               // persist clean values
-
-                if (totalTimeInMillis > 0) {     // avoid divide-by-zero
-                    updateTimerUI(totalTimeInMillis);
-                }
-            }
-        };
-        timeInput.setOnFocusChangeListener(focusListener);
-        yellowTimeInput.setOnFocusChangeListener(focusListener);
-        redTimeInput.setOnFocusChangeListener(focusListener);
-    }
-
-
-    private void resetTimerState() {
-        startTimeInMillis = 0;
-        isRunning = false;
-        isPaused = false;
-        pausedTimeOffset = 0;
-        overtimeStartInMillis = 0;
-
-        // Update the total time to the user input
-        totalTimeInMillis = parseTimeInput(timeInput.getText().toString());
-        updateTimerUI(totalTimeInMillis);
-
-        // Hide the overtime text
-        overtimeText.setVisibility(View.GONE);
-
-        // Reset background and progress bar
-        findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_green));
-        progressBar.setProgress(0); // Reset progress bar
-
-        playPauseButton.setImageResource(R.drawable.ic_play);
-    }
-
-
-    private void handlePlayPause() {
-        if (!isRunning) {
-            if (!parseAndValidateInput()) return;
-            startTimer();
-        } else {
-            if (isPaused) {
-                resumeTimer();
-            } else {
-                pauseTimer();
-            }
+        // load & maybe seed your timers...
+        timers = PreferencesManager.loadTimers(this);
+        if (timers.isEmpty()) {
+            timers.add(new TimerModel());
         }
-    }
-
-    private void handleStop() {
-        stopTimer();
-        resetTimerState();
-    }
-
-
-    private void startTimer() {
-        startTimeInMillis = System.currentTimeMillis() - pausedTimeOffset;
-        isRunning = true;
-        isPaused = false;
-        pausedTimeOffset = 0;
-        savePreferences();
-
-        playPauseButton.setImageResource(R.drawable.ic_pause);
-        stopButton.setEnabled(true);
-        timerHandler.post(updateTimerRunnable);
-    }
-
-    private void pauseTimer() {
-        isPaused = true;
-        pausedTimeOffset = System.currentTimeMillis() - startTimeInMillis;
-
-        // If we are in overtime, calculate and store the paused overtime offset
-        if (overtimeStartInMillis > 0) {
-            pausedOvertimeOffset = System.currentTimeMillis() - overtimeStartInMillis;
+        TimerModel last = timers.get(timers.size() - 1);
+        if (!isDefault(last)) {
+            timers.add(new TimerModel());
         }
+        PreferencesManager.saveTimers(this, timers);
 
-        playPauseButton.setImageResource(R.drawable.ic_play);
-        timerHandler.removeCallbacks(updateTimerRunnable);
-        savePreferences();
-    }
+        // 1) ViewPager2 + adapter
+        viewPager = findViewById(R.id.viewPager);
+        adapter   = new TimerPagerAdapter(this, timers, this);
+        viewPager.setAdapter(adapter);
 
-    private void resumeTimer() {
-        if (overtimeStartInMillis > 0) {
-            // Adjust the overtime start time using the paused overtime offset
-            overtimeStartInMillis = System.currentTimeMillis() - pausedOvertimeOffset;
-            pausedOvertimeOffset = 0; // Reset the paused offset
-        }
-
-        startTimer(); // Restart using the system time and offset
-    }
-
-
-    private void stopTimer() {
-        isRunning = false;
-        isPaused = false;
-        startTimeInMillis = 0;
-        pausedTimeOffset = 0;
-        overtimeStartInMillis = 0;
-
-        // Reset UI elements
-        playPauseButton.setImageResource(R.drawable.ic_play);
-        stopButton.setEnabled(false);
-        timerHandler.removeCallbacks(updateTimerRunnable);
-
-        // Reset background and progress bar
-        findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_green));
-        progressBar.setProgress(0); // Reset progress bar
-
-        // Hide the overtime text
-        overtimeText.setVisibility(View.GONE);
-
-        updateTimerUI(0);
-
-        savePreferences();
-    }
-
-    private final Runnable updateTimerRunnable = new Runnable() {
-        @Override
-        public void run() {
-            long elapsedMillis = System.currentTimeMillis() - startTimeInMillis;
-            long remainingTime = totalTimeInMillis - elapsedMillis;
-
-            if (remainingTime > 0) {
-                updateTimerUI(remainingTime);
-
-                // Handle color changes based on remaining time
-                if (remainingTime <= redWarningTimeInMillis) {
-                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_red));
-                } else if (remainingTime <= yellowWarningTimeInMillis) {
-                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_yellow));
-                } else {
-                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_green));
-                }
-
-                timerHandler.postDelayed(this, 1000);
-            } else {
-                // When the timer hits 0, explicitly change the background to red
-                if (overtimeStartInMillis == 0) {
-                    findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.timer_red)); // Ensure red color at time 0
-                    overtimeStartInMillis = System.currentTimeMillis();
-
-                    // Show the overtime text
-                    overtimeText.setVisibility(View.VISIBLE);
-                    overtimeText.setAlpha(1f); // Ensure the text is fully visible
-
-                }
-
-                // Update overtime
-                long overtimeElapsed = System.currentTimeMillis() - overtimeStartInMillis;
-                updateOvertimeUI(overtimeElapsed);
-
-                timerHandler.postDelayed(this, 1000);
-            }
-        }
-    };
-
-
-    private void updateOvertimeUI(long millis) {
-        overtimeText.setText("+" + formatTime(millis));
-    }
-
-    private String formatTime(long millis) {
-        int hours = (int) (millis / 1000) / 3600;
-        int minutes = (int) ((millis / 1000) % 3600) / 60;
-        int seconds = (int) (millis / 1000) % 60;
-
-        if (hours > 0) {
-            return String.format("%d:%02d:%02d", hours, minutes, seconds);
-        } else if (minutes > 0) {
-            return String.format("%d:%02d", minutes, seconds);
-        } else {
-            return String.format("%d", seconds);
-        }
-    }
-
-    private boolean parseAndValidateInput() {
-        totalTimeInMillis = parseTimeInput(timeInput.getText().toString());
-        yellowWarningTimeInMillis = parseTimeInput(yellowTimeInput.getText().toString());
-        redWarningTimeInMillis = parseTimeInput(redTimeInput.getText().toString());
-
-        if (totalTimeInMillis <= 0) {
-            showToast("Total time must be greater than zero.");
-            return false;
-        }
-
-        // If red warning time is 0 or empty, set it to trigger right before the timer ends
-        if (redWarningTimeInMillis == 0) {
-            redWarningTimeInMillis = 1; // Ensure it's set to the last millisecond
-        }
-
-        if (redWarningTimeInMillis >= yellowWarningTimeInMillis) {
-            showToast("Red warning time must be less than orange warning time.");
-            return false;
-        }
-
-        if (yellowWarningTimeInMillis >= totalTimeInMillis || redWarningTimeInMillis >= totalTimeInMillis) {
-            showToast("Warning times must be less than the total time.");
-            return false;
-        }
-
-        return true;
-    }
-
-    // ---------- safety guard added at very top ----------
-    private void updateTimerUI(long millis) {
-
-        if (totalTimeInMillis <= 0) {            // nothing valid to display
-            timerText.setText("0");
-            progressBar.setProgress(0);
-            return;
-        }
-
-        if (millis <= 0) { millis = totalTimeInMillis; }
-
-        timerText.setText(formatTime(millis));
-
-        int progress = (int) ((totalTimeInMillis - millis + 1000) * 100 / totalTimeInMillis);
-        progressBar.setProgress(progress);
+        // 2) Dot indicator via TabLayout
+        TabLayout tabs = findViewById(R.id.tab_layout);
+        new TabLayoutMediator(tabs, viewPager, (tab, pos) -> {
+            // no text—dots only
+            tab.setText("");
+        }).attach();
     }
 
 
-    private long parseTimeInput(String timeStr) {
-        try {
-            if (timeStr == null || timeStr.isEmpty()) {
-                return 0; // Return 0 for empty input
-            }
-            int hours = 0, minutes = 0, seconds = 0;
-            String[] parts = timeStr.split(":");
-            if (parts.length == 3) {
-                hours = Integer.parseInt(parts[0]);
-                minutes = Integer.parseInt(parts[1]);
-                seconds = Integer.parseInt(parts[2]);
-            } else if (parts.length == 2) {
-                minutes = Integer.parseInt(parts[0]);
-                seconds = Integer.parseInt(parts[1]);
-            } else if (parts.length == 1) {
-                seconds = Integer.parseInt(parts[0]);
-            }
-            return (hours * 3600 + minutes * 60 + seconds) * 1000;
-        } catch (NumberFormatException e) {
-            return 0; // Default to 0 if input is invalid
-        }
-    }
-
-
-    private void savePreferences() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(TOTAL_TIME_KEY, timeInput.getText().toString());
-        editor.putString(YELLOW_TIME_KEY, yellowTimeInput.getText().toString());
-        editor.putString(RED_TIME_KEY, redTimeInput.getText().toString());
-        editor.apply();
-    }
-
-    private void loadPreferences() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        timeInput.setText(prefs.getString(TOTAL_TIME_KEY, "25:00"));
-        yellowTimeInput.setText(prefs.getString(YELLOW_TIME_KEY, "10:00"));
-        redTimeInput.setText(prefs.getString(RED_TIME_KEY, "5:00"));
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void hideKeyboard() {
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
+    /** Called by a TimerFragment when its fields change. */
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            View view = getCurrentFocus();
-            if (view instanceof EditText) {
-                int[] location = new int[2];
-                view.getLocationOnScreen(location);
-                float x = ev.getRawX() + view.getLeft() - location[0];
-                float y = ev.getRawY() + view.getTop() - location[1];
+    public void onTimerChanged(int index, TimerModel updated) {
+        timers.set(index, updated);
+        PreferencesManager.saveTimers(this, timers);
 
-                // Check if the touch event is outside the bounds of the focused EditText
-                if (x < view.getLeft() || x > view.getRight() || y < view.getTop() || y > view.getBottom()) {
-                    hideKeyboard();  // Hide the keyboard
-                    view.clearFocus();  // Clear the focus from the EditText
-                }
-            }
+        // If it was the last page AND user turned it from default → non-default, append blank
+        if (index == timers.size() - 1 && !isDefault(updated)) {
+            viewPager.post(() -> {
+                timers.add(new TimerModel());
+                PreferencesManager.saveTimers(MainActivity.this, timers);
+                adapter.notifyItemInserted(timers.size() - 1);
+            });
         }
-        return super.dispatchTouchEvent(ev);
     }
 
+    /** Called by a TimerFragment when the user swipes up to delete it. */
+    @Override
+    public void onDeleteTimer(int position) {
+        // Never delete the last remaining timer
+        if (timers.size() <= 1) return;
+
+        viewPager.post(() -> {
+            timers.remove(position);
+            PreferencesManager.saveTimers(MainActivity.this, timers);
+
+            adapter.notifyItemRemoved(position);
+            adapter.notifyItemRangeChanged(position, timers.size());
+
+            // Snap to a valid page: if you deleted the last one, go to new last; else stay at same index
+            int newPos = Math.min(position, timers.size() - 1);
+            viewPager.setCurrentItem(newPos, true);
+        });
+    }
+
+    /** True if a model matches exactly your default 25:00 / 10:00 / 5:00. */
+    private boolean isDefault(TimerModel m) {
+        return m.totalMillis  == DEFAULT_TOTAL
+                && m.yellowMillis == DEFAULT_YELLOW
+                && m.redMillis    == DEFAULT_RED;
+    }
 }

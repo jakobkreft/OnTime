@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Timer content -->
+    <ScrollView
+        android:id="@+id/content_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Total Time -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total (MM:SS):" />
+
+            <EditText
+                android:id="@+id/et_total"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="MM:SS" />
+
+            <TextView
+                android:id="@+id/tv_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp" />
+
+            <!-- Yellow Warning -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Yellow Warning (MM:SS):" />
+
+            <EditText
+                android:id="@+id/et_yellow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="MM:SS" />
+
+            <TextView
+                android:id="@+id/tv_yellow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp" />
+
+            <!-- Red Warning -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Red Warning (MM:SS):" />
+
+            <EditText
+                android:id="@+id/et_red"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="MM:SS" />
+
+            <TextView
+                android:id="@+id/tv_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="24dp" />
+
+            <!-- Swipe instruction -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Swipe up to reveal delete"
+                android:textStyle="italic" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Delete button -->
+    <Button
+        android:id="@+id/btn_delete"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Delete Timer"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="32dp"
+        android:visibility="gone"
+        android:clickable="true" />
+
+</FrameLayout>

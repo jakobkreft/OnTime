@@ -1,221 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#008000"
-    android:contentDescription="main scroll"
-    android:padding="20dp"
-    android:windowSoftInputMode="adjustPan"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        style="@style/Widget.MaterialComponents.TabLayout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <!-- Title Text -->
-
-        <!-- Total Time Label -->
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="130dp"
-                android:layout_height="35dp"
-                android:layout_marginTop="4dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ontime_logo_white" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingBottom="20sp"
-                android:text="Presentation Timer for Live Events"
-                android:textColor="#D6FFFFFF"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-            <ImageButton
-                android:id="@+id/AboutButton"
-                android:layout_width="70dp"
-                android:layout_height="45dp"
-                android:layout_gravity="right"
-                android:backgroundTint="#00FFFFFF"
-                android:contentDescription="about"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_info"
-                app:tint="#FFFFFF" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/totalTimeLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Total Time (HH:MM:SS ):"
-            android:textColor="#B3FFFFFF"
-            android:textSize="16sp" />
-
-        <!-- Total Time Input -->
-        <EditText
-            android:id="@+id/timeInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:backgroundTint="#00FFFFFF"
-            android:hint="MM:SS or SS"
-            android:imeOptions="actionDone"
-            android:padding="15dp"
-            android:singleLine="true"
-            android:text="25:00"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <!-- Orange Warning Label -->
-        <TextView
-            android:id="@+id/yellowWarningLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Yellow Warning (Time Remaining):"
-            android:textColor="#B3FFFFFF"
-            android:textSize="16sp" />
-
-        <!-- Yellow Warning Input -->
-        <EditText
-            android:id="@+id/yellowTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:backgroundTint="#00FFFFFF"
-            android:hint="MM:SS or SS"
-            android:imeOptions="actionDone"
-            android:padding="15dp"
-            android:singleLine="true"
-            android:text="10:00"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <!-- Orange Warning Description -->
-        <TextView
-            android:id="@+id/yellowDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Red Warning (Time Remaining):"
-            android:textColor="#B3FFFFFF"
-            android:textSize="16sp" />
-
-        <!-- Red Warning Input -->
-
-        <EditText
-            android:id="@+id/redTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="#00FFFFFF"
-            android:hint="MM:SS or SS"
-            android:imeOptions="actionDone"
-            android:padding="15dp"
-            android:singleLine="true"
-            android:text="5:00"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-
-        <!-- Red Warning Description -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <TextView
-            android:id="@+id/redDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:text="Time left till end"
-            android:textColor="#B3FFFFFF"
-            android:textSize="14sp" />
-
-        <!-- Timer Text -->
-
-        <TextView
-            android:id="@+id/timerText"
-            android:layout_width="343dp"
-            android:layout_height="181dp"
-            android:text="12:25:19"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            app:autoSizeMaxTextSize="200sp"
-            app:autoSizeMinTextSize="10sp"
-            app:autoSizeStepGranularity="2sp"
-            app:autoSizeTextType="uniform" />
-
-
-        <!-- Overtime Text -->
-
-        <TextView
-            android:id="@+id/overtimeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:alpha="0"
-            android:text="+00:00"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="34sp" />
-
-        <!-- Button Group -->
-        <LinearLayout
-            android:id="@+id/buttonGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <!-- Play/Pause Button -->
-            <ImageButton
-                android:id="@+id/playPauseButton"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginRight="30dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="Play/Pause"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_play"
-                app:tint="#FFFFFF" />
-
-            <!-- Stop Button -->
-            <ImageButton
-                android:id="@+id/stopButton"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="Stop"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_stop"
-                app:tint="#FFFFFF" />
-        </LinearLayout>
-
-        <!-- Footer Text -->
-
-    </LinearLayout>
-</ScrollView>
+        android:layout_gravity="center"
+        app:tabIndicatorColor="?attr/colorPrimary"
+        app:tabIndicatorHeight="4dp"
+        app:tabIndicatorFullWidth="false"
+        app:tabSelectedTextColor="@android:color/transparent"
+        app:tabTextColor="@android:color/transparent"
+        app:tabGravity="center"
+        app:tabMode="fixed"/>
+</LinearLayout>
