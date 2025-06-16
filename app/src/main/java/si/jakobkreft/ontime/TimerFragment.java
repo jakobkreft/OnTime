@@ -26,6 +26,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.List;
 
@@ -122,17 +123,29 @@ public class TimerFragment extends Fragment {
         actions = (TimerActions) ctx;
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inf, ViewGroup container, Bundle saved) {
-        rootView       = inf.inflate(R.layout.fragment_timer, container, false);
-        index          = requireArguments().getInt(ARG_INDEX);
-        model          = PreferencesManager.loadTimers(requireContext()).get(index);
 
-        // bind views
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle out) {
+        super.onSaveInstanceState(out);
+        // save running/paused state and timing offsets
+        out.putBoolean("isRunning",       isRunning);
+        out.putBoolean("isPaused",        isPaused);
+        out.putLong   ("startTime",       startTimeInMillis);
+        out.putLong   ("pausedOffset",    pausedTimeOffset);
+        out.putLong   ("overtimeStart",   overtimeStartInMillis);
+        out.putLong   ("pausedOvertime",  pausedOvertimeOffset);
+        out.putInt    ("bgColor",         currentBgColor);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inf,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        rootView = inf.inflate(R.layout.fragment_timer, container, false);
+
+        // …bind all your views exactly as before…
         contentView       = rootView.findViewById(R.id.content_view);
         deleteBtn         = rootView.findViewById(R.id.btn_delete);
-        deleteBtn.bringToFront();
-
         timeInput         = rootView.findViewById(R.id.timeInput);
         yellowTimeInput   = rootView.findViewById(R.id.yellowTime);
         redTimeInput      = rootView.findViewById(R.id.redTime);
@@ -142,30 +155,55 @@ public class TimerFragment extends Fragment {
         timerText         = rootView.findViewById(R.id.timerText);
         overtimeText      = rootView.findViewById(R.id.overtimeText);
         redDescription    = rootView.findViewById(R.id.redDescription);
-
         ImageButton aboutButton = rootView.findViewById(R.id.AboutButton);
         aboutButton.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), AboutActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(requireContext(), AboutActivity.class));
         });
 
-        // initialize inputs
+        // load model & inputs
+        index = requireArguments().getInt(ARG_INDEX);
+        model = PreferencesManager.loadTimers(requireContext()).get(index);
         timeInput.setText(formatTime(model.totalMillis));
         yellowTimeInput.setText(formatTime(model.yellowMillis));
         redTimeInput.setText(formatTime(model.redMillis));
-
-        // hide delete
         deleteBtn.setVisibility(View.GONE);
 
-        // listeners
+        // restore running state if there’s a bundle
+        if (savedInstanceState != null) {
+            isRunning             = savedInstanceState.getBoolean("isRunning");
+            isPaused              = savedInstanceState.getBoolean("isPaused");
+            startTimeInMillis     = savedInstanceState.getLong   ("startTime");
+            pausedTimeOffset      = savedInstanceState.getLong   ("pausedOffset");
+            overtimeStartInMillis = savedInstanceState.getLong   ("overtimeStart");
+            pausedOvertimeOffset  = savedInstanceState.getLong   ("pausedOvertime");
+            currentBgColor        = savedInstanceState.getInt    ("bgColor");
+
+            // re-sync thresholds from model
+            totalTimeInMillis        = model.totalMillis;
+            yellowWarningTimeInMillis = model.yellowMillis;
+            redWarningTimeInMillis    = model.redMillis;
+
+            // re-apply UI to match restored state
+            applyBackgroundColor(currentBgColor);
+            long elapsed = System.currentTimeMillis() - startTimeInMillis;
+            long remaining = Math.max(0, totalTimeInMillis - elapsed);
+            updateTimerUI(remaining);
+            playPauseButton.setImageResource(isPaused ? R.drawable.ic_play
+                    : R.drawable.ic_pause);
+            stopButton.setEnabled(isRunning);
+            if (isRunning && !isPaused) {
+                timerHandler.post(updateTimerRunnable);
+            }
+        } else {
+            // first creation: fresh reset
+            resetTimerState();
+        }
+
+        // common setup
         setupInputListeners();
         playPauseButton.setOnClickListener(v -> handlePlayPause());
         stopButton.setOnClickListener(v -> handleStop());
-        stopButton.setEnabled(false);
-
-        resetTimerState();
         setupDeleteGesture();
-
         return rootView;
     }
 
@@ -193,22 +231,24 @@ public class TimerFragment extends Fragment {
     private void applyBackgroundColor(@ColorInt int color) {
         currentBgColor = color;
 
-        // 1) Fragment’s own background
+        // 1) Fragment’s own background always updates
         rootView.setBackgroundColor(color);
 
-        // 2) Activity’s container behind the tabs
-        requireActivity()
-                .findViewById(R.id.main_container)
-                .setBackgroundColor(color);
+        // 2) Only the _visible_ page should paint the activity container & system bars
+        ViewPager2 pager = requireActivity().findViewById(R.id.viewPager);
+        if (pager.getCurrentItem() == index) {
+            // activity container behind the tabs
+            requireActivity()
+                    .findViewById(R.id.main_container)
+                    .setBackgroundColor(color);
 
-        // 3) System bars
-        Window window = requireActivity().getWindow();
-        // ensure we can tint them
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        // apply the same color
-        window.setStatusBarColor(color);
-        window.setNavigationBarColor(color);
+            // system bars
+            Window window = requireActivity().getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(color);
+            window.setNavigationBarColor(color);
+        }
     }
 
     private void setupInputListeners() {

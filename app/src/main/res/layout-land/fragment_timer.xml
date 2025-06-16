@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- DELETE BUTTON (two-step delete) -->
+    <ImageButton
+        android:id="@+id/btn_delete1"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Delete Timer"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="32dp"
+        android:visibility="gone"
+        android:clickable="true"/>
+
+    <ImageButton
+        android:id="@+id/btn_delete"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:contentDescription="Delete"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_trash"
+        android:visibility="gone"
+        app:tint="@color/white" />
+
+    <!-- LANDSCAPE: split into two columns -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!-- Left column: header, inputs, progress -->
+        <ScrollView
+            android:id="@+id/content_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <!-- Header -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="130dp"
+                        android:layout_height="35dp"
+                        android:layout_marginTop="4dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:srcCompat="@drawable/ontime_logo_white" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingBottom="20sp"
+                        android:text="Presentation Timer for Live Events"
+                        android:textColor="#D6FFFFFF"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/imageView"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <ImageButton
+                        android:id="@+id/AboutButton"
+                        android:layout_width="70dp"
+                        android:layout_height="45dp"
+                        android:layout_gravity="right"
+                        android:contentDescription="about"
+                        android:backgroundTint="#00FFFFFF"
+                        android:scaleType="fitCenter"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:srcCompat="@drawable/ic_info"
+                        app:tint="#FFFFFF"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Inputs -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Time (HH:MM:SS):"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="16sp"/>
+
+                <EditText
+                    android:id="@+id/timeInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#00FFFFFF"
+                    android:hint="MM:SS or SS"
+                    android:imeOptions="actionDone"
+                    android:padding="15dp"
+                    android:singleLine="true"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Yellow Warning (Time Remaining):"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="16sp"/>
+
+                <EditText
+                    android:id="@+id/yellowTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#00FFFFFF"
+                    android:hint="MM:SS or SS"
+                    android:imeOptions="actionDone"
+                    android:padding="15dp"
+                    android:singleLine="true"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Red Warning (Time Remaining):"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="16sp"/>
+
+                <EditText
+                    android:id="@+id/redTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#00FFFFFF"
+                    android:hint="MM:SS or SS"
+                    android:imeOptions="actionDone"
+                    android:padding="15dp"
+                    android:singleLine="true"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <!-- Progress & Label -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/redDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="16dp"
+                    android:text="Time left till end"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Right column: timer display, overtime, controls -->
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <!-- Timer Display -->
+                <TextView
+                    android:id="@+id/timerText"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="00:00"
+                    android:textColor="#FFFFFF"
+                    app:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="10sp"
+                    app:autoSizeMaxTextSize="200sp"
+                    app:autoSizeStepGranularity="2sp"/>
+
+                <!-- Overtime -->
+                <TextView
+                    android:id="@+id/overtimeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:alpha="0"
+                    android:text="+00:00"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="34sp"/>
+
+                <!-- Controls -->
+                <LinearLayout
+                    android:id="@+id/buttonGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="20dp">
+
+                    <ImageButton
+                        android:id="@+id/playPauseButton"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginRight="30dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="Play/Pause"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_play"
+                        app:tint="#FFFFFF" />
+
+                    <ImageButton
+                        android:id="@+id/stopButton"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="Stop"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_stop"
+                        app:tint="#FFFFFF" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</FrameLayout>

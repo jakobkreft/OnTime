@@ -1,6 +1,7 @@
 package si.jakobkreft.ontime;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -26,6 +28,15 @@ public class MainActivity extends AppCompatActivity
     private ViewPager2        viewPager;
     private TimerPagerAdapter adapter;
     private List<TimerModel>  timers;
+    // in MainActivity.java
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Force the currently-visible fragment to tear down & re-inflate its view
+        int current = viewPager.getCurrentItem();
+        adapter.notifyItemChanged(current);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
