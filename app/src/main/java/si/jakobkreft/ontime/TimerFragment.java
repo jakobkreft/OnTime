@@ -310,10 +310,17 @@ public class TimerFragment extends Fragment {
         progressBar.setProgress(0);
         playPauseButton.setImageResource(R.drawable.ic_play);
     }
-    private void setupDeleteGesture() {
-        contentView.setOnTouchListener(new View.OnTouchListener() {
-            float startY;
 
+    private void setupDeleteGesture() {
+        // find both scrollviews
+        View[] swipeTargets = new View[] {
+                rootView.findViewById(R.id.content_view),
+                rootView.findViewById(R.id.right_content_view)
+        };
+
+        // your listener logic extracted once
+        View.OnTouchListener swipeListener = new View.OnTouchListener() {
+            float startY;
             @Override
             public boolean onTouch(View v, MotionEvent ev) {
                 switch (ev.getActionMasked()) {
@@ -329,33 +336,26 @@ public class TimerFragment extends Fragment {
                             return false;
                         }
                         break;
-
                     case MotionEvent.ACTION_UP:
                         float dy = ev.getY() - startY;
                         List<TimerModel> all = PreferencesManager.loadTimers(requireContext());
                         boolean canDelete = all.size() > 1 && !isDefault(model);
 
-                        // user swiped up
                         if (dy < -FLING_THRESHOLD) {
                             if (canDelete && !pendingDelete) {
-                                // reveal delete
                                 pendingDelete = true;
                                 deleteBtn.setVisibility(View.VISIBLE);
                                 rootView.animate()
                                         .translationY(-rootView.getHeight() / 3f)
                                         .setDuration(300)
                                         .start();
-                                return true;  // consume so ViewPager2 won’t steal it
                             } else if (!canDelete) {
-                                // show reason why deletion isn't allowed
                                 Toast.makeText(requireContext(),
                                         "Cannot delete this timer: at least one non-default timer must remain.",
                                         Toast.LENGTH_SHORT).show();
-                                return true;  // consume so ViewPager2 won’t steal it
                             }
-                        }
-                        // cancel delete on downward drag beyond threshold
-                        else if (dy > FLING_THRESHOLD && pendingDelete) {
+                            return true;
+                        } else if (dy > FLING_THRESHOLD && pendingDelete) {
                             pendingDelete = false;
                             rootView.animate()
                                     .translationY(0f)
@@ -368,8 +368,16 @@ public class TimerFragment extends Fragment {
                 }
                 return false;
             }
-        });
+        };
 
+        // attach to both scrollviews
+        for (View target : swipeTargets) {
+            if (target != null) {
+                target.setOnTouchListener(swipeListener);
+            }
+        }
+
+        // delete button remains the same
         deleteBtn.setOnClickListener(v -> {
             rootView.animate()
                     .translationY(-rootView.getHeight())

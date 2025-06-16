@@ -64,18 +64,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:srcCompat="@drawable/ontime_logo_white" />
 
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingBottom="20sp"
-                        android:text="Presentation Timer for Live Events"
-                        android:textColor="#D6FFFFFF"
-                        android:textSize="12sp"
-                        app:layout_constraintTop_toBottomOf="@id/imageView"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"/>
 
                     <ImageButton
                         android:id="@+id/AboutButton"
@@ -152,26 +140,14 @@
                     android:textColor="#FFFFFF"
                     android:textSize="20sp" />
 
-                <!-- Progress & Label -->
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
 
-                <TextView
-                    android:id="@+id/redDescription"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="16dp"
-                    android:text="Time left till end"
-                    android:textColor="#B3FFFFFF"
-                    android:textSize="14sp"/>
+
             </LinearLayout>
         </ScrollView>
 
         <!-- Right column: timer display, overtime, controls -->
         <ScrollView
+            android:id="@+id/right_content_view"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -183,18 +159,25 @@
                 android:orientation="vertical"
                 android:gravity="center_horizontal">
 
+                <!-- Progress & Label -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
                 <!-- Timer Display -->
                 <TextView
                     android:id="@+id/timerText"
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
+                    android:layout_height="160dp"
                     android:gravity="center"
                     android:maxLines="1"
                     android:text="00:00"
                     android:textColor="#FFFFFF"
                     app:autoSizeTextType="uniform"
                     app:autoSizeMinTextSize="10sp"
-                    app:autoSizeMaxTextSize="200sp"
+                    app:autoSizeMaxTextSize="180sp"
                     app:autoSizeStepGranularity="2sp"/>
 
                 <!-- Overtime -->
