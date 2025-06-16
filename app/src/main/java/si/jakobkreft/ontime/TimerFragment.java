@@ -270,7 +270,6 @@ public class TimerFragment extends Fragment {
         progressBar.setProgress(0);
         playPauseButton.setImageResource(R.drawable.ic_play);
     }
-
     private void setupDeleteGesture() {
         contentView.setOnTouchListener(new View.OnTouchListener() {
             float startY;
@@ -280,17 +279,13 @@ public class TimerFragment extends Fragment {
                 switch (ev.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
                         startY = ev.getY();
-                        // If user had revealed delete but didn’t actually cancel yet,
-                        // immediately reset on next touch-down.
                         if (pendingDelete) {
                             pendingDelete = false;
-                            // animate back up
                             rootView.animate()
                                     .translationY(0f)
                                     .setDuration(200)
                                     .withEndAction(() -> deleteBtn.setVisibility(View.GONE))
                                     .start();
-                            // don’t treat this as a swipe
                             return false;
                         }
                         break;
@@ -300,15 +295,24 @@ public class TimerFragment extends Fragment {
                         List<TimerModel> all = PreferencesManager.loadTimers(requireContext());
                         boolean canDelete = all.size() > 1 && !isDefault(model);
 
-                        // reveal delete on upward drag beyond threshold
-                        if (dy < -FLING_THRESHOLD && canDelete && !pendingDelete) {
-                            pendingDelete = true;
-                            deleteBtn.setVisibility(View.VISIBLE);
-                            rootView.animate()
-                                    .translationY(-rootView.getHeight() / 3f)
-                                    .setDuration(300)
-                                    .start();
-                            return true;  // consume so ViewPager2 won’t steal it
+                        // user swiped up
+                        if (dy < -FLING_THRESHOLD) {
+                            if (canDelete && !pendingDelete) {
+                                // reveal delete
+                                pendingDelete = true;
+                                deleteBtn.setVisibility(View.VISIBLE);
+                                rootView.animate()
+                                        .translationY(-rootView.getHeight() / 3f)
+                                        .setDuration(300)
+                                        .start();
+                                return true;  // consume so ViewPager2 won’t steal it
+                            } else if (!canDelete) {
+                                // show reason why deletion isn't allowed
+                                Toast.makeText(requireContext(),
+                                        "Cannot delete this timer: at least one non-default timer must remain.",
+                                        Toast.LENGTH_SHORT).show();
+                                return true;  // consume so ViewPager2 won’t steal it
+                            }
                         }
                         // cancel delete on downward drag beyond threshold
                         else if (dy > FLING_THRESHOLD && pendingDelete) {
@@ -322,7 +326,6 @@ public class TimerFragment extends Fragment {
                         }
                         break;
                 }
-                // Let ViewPager2 handle everything else (pure taps, small moves)
                 return false;
             }
         });
@@ -339,6 +342,7 @@ public class TimerFragment extends Fragment {
                     .start();
         });
     }
+
 
     // Timer controls (start, pause, resume, stop, validation)
     private void handlePlayPause() {

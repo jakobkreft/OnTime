@@ -20,14 +20,14 @@
         android:id="@+id/btn_delete"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:background="?attr/selectableItemBackground"
-        android:contentDescription="Delete"
         android:layout_gravity="bottom|center_horizontal"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:contentDescription="Delete"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_trash"
-        app:tint="#FFFFFF"
         android:visibility="gone"
-        android:clickable="true"/>
+        app:tint="@color/white" />
 
     <!-- ACTUAL TIMER UI -->
     <ScrollView
@@ -94,16 +94,16 @@
 
             <EditText
                 android:id="@+id/timeInput"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="MM:SS or SS"
-                android:padding="15dp"
                 android:backgroundTint="#00FFFFFF"
+                android:hint="MM:SS or SS"
                 android:imeOptions="actionDone"
+                android:padding="15dp"
                 android:singleLine="true"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -114,16 +114,16 @@
 
             <EditText
                 android:id="@+id/yellowTime"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="MM:SS or SS"
-                android:padding="15dp"
                 android:backgroundTint="#00FFFFFF"
+                android:hint="MM:SS or SS"
                 android:imeOptions="actionDone"
+                android:padding="15dp"
                 android:singleLine="true"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -134,16 +134,16 @@
 
             <EditText
                 android:id="@+id/redTime"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="MM:SS or SS"
-                android:padding="15dp"
                 android:backgroundTint="#00FFFFFF"
+                android:hint="MM:SS or SS"
                 android:imeOptions="actionDone"
+                android:padding="15dp"
                 android:singleLine="true"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <!-- Progress & Labels -->
             <ProgressBar
@@ -166,14 +166,14 @@
                 android:id="@+id/timerText"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
-            android:maxLines="1"
-            android:gravity="center"
+                android:gravity="center"
+                android:maxLines="1"
                 android:text="00:00"
                 android:textColor="#FFFFFF"
-                app:autoSizeTextType="uniform"
-                app:autoSizeMinTextSize="10sp"
                 app:autoSizeMaxTextSize="200sp"
-                app:autoSizeStepGranularity="2sp"/>
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform" />
 
             <!-- Overtime -->
             <TextView
@@ -182,10 +182,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:alpha="0"
+                android:shadowColor="#7A000000"
+                android:shadowDx="5"
+                android:shadowDy="5"
+                android:shadowRadius="5"
                 android:text="+00:00"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textSize="34sp"/>
+                android:textSize="34sp" />
 
             <!-- Controls -->
             <LinearLayout
@@ -200,6 +204,7 @@
                     android:id="@+id/playPauseButton"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
+                    android:layout_marginRight="30dp"
                     android:background="?attr/selectableItemBackground"
                     android:contentDescription="Play/Pause"
                     android:scaleType="fitCenter"
