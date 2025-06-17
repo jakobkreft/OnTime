@@ -57,6 +57,8 @@ public class TimerFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView    timerText, overtimeText, redDescription;
 
+    private TextView    pageText;
+
     // Timer state
     private Handler timerHandler = new Handler(Looper.getMainLooper());
     private long totalTimeInMillis, yellowWarningTimeInMillis, redWarningTimeInMillis;
@@ -156,6 +158,8 @@ public class TimerFragment extends Fragment {
         timerText         = rootView.findViewById(R.id.timerText);
         overtimeText      = rootView.findViewById(R.id.overtimeText);
         redDescription    = rootView.findViewById(R.id.redDescription);
+        pageText         = rootView.findViewById(R.id.PageText);
+
         ImageButton aboutButton = rootView.findViewById(R.id.AboutButton);
 
         // 2) “About” tap
@@ -219,6 +223,8 @@ public class TimerFragment extends Fragment {
         stopButton.setOnClickListener(v -> handleStop());
         setupDeleteGesture();
 
+        updatePageIndicator();
+
         return rootView;
     }
 
@@ -230,6 +236,8 @@ public class TimerFragment extends Fragment {
                 .findViewById(R.id.main_container)
                 .setBackgroundColor(currentBgColor);
         applyBackgroundColor(currentBgColor);
+
+        updatePageIndicator();
     }
 
     @Override public void onDestroyView() {
@@ -305,6 +313,13 @@ public class TimerFragment extends Fragment {
         timeInput.setOnFocusChangeListener(focusListener);
         yellowTimeInput.setOnFocusChangeListener(focusListener);
         redTimeInput.setOnFocusChangeListener(focusListener);
+    }
+
+    private void updatePageIndicator() {
+        ViewPager2 pager = requireActivity().findViewById(R.id.viewPager);
+        int total = pager.getAdapter().getItemCount();
+        // index is zero-based, but we want “1/…”
+        pageText.setText((index + 1) + "/" + total);
     }
 
 

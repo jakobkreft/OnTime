@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -12,14 +13,13 @@
     <ScrollView
         android:id="@+id/content_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="20dp">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <!-- Header -->
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,9 +31,9 @@
                     android:layout_width="130dp"
                     android:layout_height="35dp"
                     android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ontime_logo_white" />
 
                 <TextView
@@ -45,22 +45,35 @@
                     android:text="Presentation Timer for Live Events"
                     android:textColor="#D6FFFFFF"
                     android:textSize="12sp"
-                    app:layout_constraintTop_toBottomOf="@id/imageView"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintTop_toBottomOf="@id/imageView" />
 
                 <ImageButton
                     android:id="@+id/AboutButton"
                     android:layout_width="70dp"
                     android:layout_height="45dp"
                     android:layout_gravity="right"
-                    android:contentDescription="about"
                     android:backgroundTint="#00FFFFFF"
+                    android:contentDescription="about"
                     android:scaleType="fitCenter"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_info"
-                    app:tint="#FFFFFF"/>
+                    app:tint="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/PageText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="12dp"
+                    android:text="0/0"
+                    android:textColor="#B2FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Inputs -->
@@ -69,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:text="Total Time (HH:MM:SS):"
                 android:textColor="#B3FFFFFF"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/timeInput"
@@ -89,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:text="Yellow Warning (Time Remaining):"
                 android:textColor="#B3FFFFFF"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/yellowTime"
@@ -109,7 +122,7 @@
                 android:layout_height="wrap_content"
                 android:text="Red Warning (Time Remaining):"
                 android:textColor="#B3FFFFFF"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/redTime"
@@ -129,7 +142,7 @@
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/redDescription"
@@ -138,7 +151,7 @@
                 android:paddingTop="16dp"
                 android:text="Time left till end"
                 android:textColor="#B3FFFFFF"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
             <!-- Timer Display -->
             <TextView
@@ -175,9 +188,9 @@
                 android:id="@+id/buttonGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_marginBottom="20dp"
                 android:gravity="center"
-                android:layout_marginBottom="20dp">
+                android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/playPauseButton"
@@ -200,7 +213,6 @@
                     android:src="@drawable/ic_stop"
                     app:tint="#FFFFFF" />
             </LinearLayout>
-
 
 
         </LinearLayout>
