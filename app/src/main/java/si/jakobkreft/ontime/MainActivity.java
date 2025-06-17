@@ -85,24 +85,25 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /** Called by a TimerFragment when the user swipes up to delete it. */
     @Override
     public void onDeleteTimer(int position) {
-        // Never delete the last remaining timer
         if (timers.size() <= 1) return;
 
-        viewPager.post(() -> {
-            timers.remove(position);
-            PreferencesManager.saveTimers(MainActivity.this, timers);
+        // 1) remove model & persist
+        timers.remove(position);
+        PreferencesManager.saveTimers(this, timers);
 
-            adapter.notifyItemRemoved(position);
-            adapter.notifyItemRangeChanged(position, timers.size());
+        // 2) figure out which page to land on
+        int newPos = Math.min(position, timers.size() - 1);
 
-            // Snap to a valid page: if you deleted the last one, go to new last; else stay at same index
-            int newPos = Math.min(position, timers.size() - 1);
-            viewPager.setCurrentItem(newPos, true);
-        });
+        // 3) rebuild the adapter with the new list
+        adapter = new TimerPagerAdapter(this, timers, this);
+        viewPager.setAdapter(adapter);
+
+        // 4) re‐snap to a valid page
+        viewPager.setCurrentItem(newPos, true);
     }
+
 
     /** True if a model matches exactly your default 25:00 / 10:00 / 5:00. */
     private boolean isDefault(TimerModel m) {

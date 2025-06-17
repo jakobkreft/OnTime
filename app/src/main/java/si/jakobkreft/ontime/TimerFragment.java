@@ -377,8 +377,12 @@ public class TimerFragment extends Fragment {
             }
         }
 
-        // delete button remains the same
         deleteBtn.setOnClickListener(v -> {
+            // 1) force‐stop & fully reset
+            stopTimer();          // clears isRunning/isPaused, UI back to green+play+hide overtime
+            resetTimerState();    // also hides overtimeText, resets bg color & progress
+
+            // 2) animate out & delete
             rootView.animate()
                     .translationY(-rootView.getHeight())
                     .alpha(0f)
