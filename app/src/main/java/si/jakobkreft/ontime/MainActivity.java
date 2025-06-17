@@ -28,6 +28,9 @@ public class MainActivity extends AppCompatActivity
     private ViewPager2        viewPager;
     private TimerPagerAdapter adapter;
     private List<TimerModel>  timers;
+
+    private TabLayout         tabLayout;
+    private TabLayoutMediator tabMediator;
     // in MainActivity.java
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
@@ -54,17 +57,15 @@ public class MainActivity extends AppCompatActivity
         }
         PreferencesManager.saveTimers(this, timers);
 
-        // 1) ViewPager2 + adapter
         viewPager = findViewById(R.id.viewPager);
         adapter   = new TimerPagerAdapter(this, timers, this);
         viewPager.setAdapter(adapter);
 
-        // 2) Dot indicator via TabLayout
-        TabLayout tabs = findViewById(R.id.tab_layout);
-        new TabLayoutMediator(tabs, viewPager, (tab, pos) -> {
-            // no text—dots only
+        tabLayout   = findViewById(R.id.tab_layout);
+        tabMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, pos) -> {
             tab.setText("");
-        }).attach();
+        });
+        tabMediator.attach();
     }
 
 
@@ -89,18 +90,27 @@ public class MainActivity extends AppCompatActivity
     public void onDeleteTimer(int position) {
         if (timers.size() <= 1) return;
 
-        // 1) remove model & persist
+        // 1) Remove the model + persist
         timers.remove(position);
         PreferencesManager.saveTimers(this, timers);
 
-        // 2) figure out which page to land on
+        // 2) Decide new current page
         int newPos = Math.min(position, timers.size() - 1);
 
-        // 3) rebuild the adapter with the new list
+        // 3) Swap in a fresh adapter
         adapter = new TimerPagerAdapter(this, timers, this);
         viewPager.setAdapter(adapter);
 
-        // 4) re‐snap to a valid page
+        // 4) Tear down the old mediator…
+        tabMediator.detach();
+
+        // 5) …and create & attach a new one to sync the dots
+        tabMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, pos) -> {
+            tab.setText("");
+        });
+        tabMediator.attach();
+
+        // 6) Move to the correct page
         viewPager.setCurrentItem(newPos, true);
     }
 

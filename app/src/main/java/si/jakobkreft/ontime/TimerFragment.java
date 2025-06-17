@@ -137,13 +137,14 @@ public class TimerFragment extends Fragment {
         out.putInt    ("bgColor",         currentBgColor);
     }
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inf,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inf.inflate(R.layout.fragment_timer, container, false);
 
-        // …bind all your views exactly as before…
+        // 1) Inflate & bind
+        rootView = inf.inflate(R.layout.fragment_timer, container, false);
         contentView       = rootView.findViewById(R.id.content_view);
         deleteBtn         = rootView.findViewById(R.id.btn_delete);
         timeInput         = rootView.findViewById(R.id.timeInput);
@@ -156,56 +157,71 @@ public class TimerFragment extends Fragment {
         overtimeText      = rootView.findViewById(R.id.overtimeText);
         redDescription    = rootView.findViewById(R.id.redDescription);
         ImageButton aboutButton = rootView.findViewById(R.id.AboutButton);
-        aboutButton.setOnClickListener(v -> {
-            startActivity(new Intent(requireContext(), AboutActivity.class));
-        });
 
-        // load model & inputs
+        // 2) “About” tap
+        aboutButton.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), AboutActivity.class))
+        );
+
+        // 3) Load the model & show static inputs
         index = requireArguments().getInt(ARG_INDEX);
         model = PreferencesManager.loadTimers(requireContext()).get(index);
         timeInput.setText(formatTime(model.totalMillis));
         yellowTimeInput.setText(formatTime(model.yellowMillis));
         redTimeInput.setText(formatTime(model.redMillis));
+
+        // 4) Sync local threshold vars
+        totalTimeInMillis         = model.totalMillis;
+        yellowWarningTimeInMillis = model.yellowMillis;
+        redWarningTimeInMillis    = model.redMillis;
+
+        // 5) Hide delete-button until swipe
         deleteBtn.setVisibility(View.GONE);
+// 6) Restore live state from model
+        if (model.isRunning) {
+            isRunning             = true;
+            isPaused              = model.isPaused;
 
-        // restore running state if there’s a bundle
-        if (savedInstanceState != null) {
-            isRunning             = savedInstanceState.getBoolean("isRunning");
-            isPaused              = savedInstanceState.getBoolean("isPaused");
-            startTimeInMillis     = savedInstanceState.getLong   ("startTime");
-            pausedTimeOffset      = savedInstanceState.getLong   ("pausedOffset");
-            overtimeStartInMillis = savedInstanceState.getLong   ("overtimeStart");
-            pausedOvertimeOffset  = savedInstanceState.getLong   ("pausedOvertime");
-            currentBgColor        = savedInstanceState.getInt    ("bgColor");
+            // ← map model → local
+            startTimeInMillis     = model.startAt;
+            pausedTimeOffset      = model.pausedOffset;
+            overtimeStartInMillis = model.overtimeAt;
+            pausedOvertimeOffset  = model.otPausedOffset;
 
-            // re-sync thresholds from model
-            totalTimeInMillis        = model.totalMillis;
-            yellowWarningTimeInMillis = model.yellowMillis;
-            redWarningTimeInMillis    = model.redMillis;
+            // allow stopping
+            stopButton.setEnabled(true);
 
-            // re-apply UI to match restored state
-            applyBackgroundColor(currentBgColor);
-            long elapsed = System.currentTimeMillis() - startTimeInMillis;
-            long remaining = Math.max(0, totalTimeInMillis - elapsed);
-            updateTimerUI(remaining);
-            playPauseButton.setImageResource(isPaused ? R.drawable.ic_play
-                    : R.drawable.ic_pause);
-            stopButton.setEnabled(isRunning);
-            if (isRunning && !isPaused) {
+            if (isPaused) {
+                // paused → show remaining & play icon
+                playPauseButton.setImageResource(R.drawable.ic_play);
+                long remaining = Math.max(0, totalTimeInMillis - pausedTimeOffset);
+                updateTimerUI(remaining);
+            } else {
+                // actively running → pause icon + resume updates
+                playPauseButton.setImageResource(R.drawable.ic_pause);
                 timerHandler.post(updateTimerRunnable);
             }
+
+            // if already in overtime
+            if (overtimeStartInMillis > 0) {
+                overtimeText.setVisibility(View.VISIBLE);
+                updateOvertimeUI(System.currentTimeMillis() - overtimeStartInMillis);
+            }
+
         } else {
-            // first creation: fresh reset
+            // not running → full reset
             resetTimerState();
         }
 
-        // common setup
+        // 7) Wire up controls & gestures
         setupInputListeners();
         playPauseButton.setOnClickListener(v -> handlePlayPause());
         stopButton.setOnClickListener(v -> handleStop());
         setupDeleteGesture();
+
         return rootView;
     }
+
 
     @Override public void onResume() {
         super.onResume();
@@ -416,10 +432,20 @@ public class TimerFragment extends Fragment {
         resetTimerState();
         stopButton.setEnabled(false);
     }
-
     private void startTimer() {
         startTimeInMillis = System.currentTimeMillis() - pausedTimeOffset;
-        isRunning = true; isPaused = false; pausedTimeOffset = 0;
+        isRunning = true;
+        isPaused  = false;
+
+        // sync back to model
+        model.isRunning       = true;
+        model.isPaused        = false;
+        model.startAt         = startTimeInMillis;
+        model.pausedOffset    = pausedTimeOffset;
+        model.overtimeAt      = overtimeStartInMillis;
+        model.otPausedOffset  = pausedOvertimeOffset;
+        actions.onTimerChanged(index, model);
+
         playPauseButton.setImageResource(R.drawable.ic_pause);
         stopButton.setEnabled(true);
         timerHandler.post(updateTimerRunnable);
@@ -431,6 +457,16 @@ public class TimerFragment extends Fragment {
         if (overtimeStartInMillis > 0) {
             pausedOvertimeOffset = System.currentTimeMillis() - overtimeStartInMillis;
         }
+
+        // sync back to model
+        model.isRunning       = true;
+        model.isPaused        = true;
+        model.startAt         = startTimeInMillis;
+        model.pausedOffset    = pausedTimeOffset;
+        model.overtimeAt      = overtimeStartInMillis;
+        model.otPausedOffset  = pausedOvertimeOffset;
+        actions.onTimerChanged(index, model);
+
         playPauseButton.setImageResource(R.drawable.ic_play);
         timerHandler.removeCallbacks(updateTimerRunnable);
     }
@@ -438,21 +474,37 @@ public class TimerFragment extends Fragment {
     private void resumeTimer() {
         if (overtimeStartInMillis > 0) {
             overtimeStartInMillis = System.currentTimeMillis() - pausedOvertimeOffset;
-            pausedOvertimeOffset = 0;
+            pausedOvertimeOffset  = 0;
         }
-        startTimer();
+        startTimer();  // will sync back again
     }
 
     private void stopTimer() {
-        isRunning = false; isPaused = false;
-        startTimeInMillis = 0; pausedTimeOffset = 0; overtimeStartInMillis = 0;
+        isRunning            = false;
+        isPaused             = false;
+        startTimeInMillis    = 0;
+        pausedTimeOffset     = 0;
+        overtimeStartInMillis= 0;
+        pausedOvertimeOffset = 0;
+
+        // sync back to model
+        model.isRunning       = false;
+        model.isPaused        = false;
+        model.startAt         = 0;
+        model.pausedOffset    = 0;
+        model.overtimeAt      = 0;
+        model.otPausedOffset  = 0;
+        actions.onTimerChanged(index, model);
+
         playPauseButton.setImageResource(R.drawable.ic_play);
         timerHandler.removeCallbacks(updateTimerRunnable);
+
         @ColorInt int green = ContextCompat.getColor(requireContext(), R.color.timer_green);
         applyBackgroundColor(green);
         progressBar.setProgress(0);
         overtimeText.setVisibility(View.GONE);
     }
+
 
     private boolean validateInputs() {
         if (totalTimeInMillis <= 0) {
