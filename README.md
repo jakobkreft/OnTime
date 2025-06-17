@@ -21,6 +21,8 @@
 - **Pause and Resume**
 - **Overtime Timer**: Shows time over the set amount.
 - **Saved Settings**: Retains your preferences between sessions.
+- **Multiple Timers**: Swipe left and right between saved timers.
+- **Delete Timer**: Swipe up to reveal and delete the current timer.
 
 ## Usage
 1. Set your desired total, yellow, and red warning times.
@@ -30,6 +32,8 @@
    - Yellow: Time running out.
    - Red: Time running out or over.
 4. Pause, resume, or reset as needed.
+5. Swipe right to access a new timer, this way you can have multiple saved presets.
+6. Swipe up to reveal and delete one of the timers.
 
 ## License
 
