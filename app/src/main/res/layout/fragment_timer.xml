@@ -6,28 +6,7 @@
     android:layout_height="match_parent">
 
     <!-- DELETE BUTTON (two-step delete) -->
-    <ImageButton
-        android:id="@+id/btn_delete1"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Delete Timer"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="32dp"
-        android:visibility="gone"
-        android:clickable="true"/>
 
-    <ImageButton
-        android:id="@+id/btn_delete"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:contentDescription="Delete"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_trash"
-        android:visibility="gone"
-        app:tint="@color/white" />
 
     <!-- ACTUAL TIMER UI -->
     <ScrollView
@@ -222,6 +201,20 @@
                     app:tint="#FFFFFF" />
             </LinearLayout>
 
+
+
         </LinearLayout>
     </ScrollView>
+    <ImageButton
+        android:id="@+id/btn_delete"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:contentDescription="Delete"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_trash"
+        android:visibility="gone"
+        app:tint="@color/white" />
 </FrameLayout>

@@ -351,7 +351,7 @@ public class TimerFragment extends Fragment {
                                         .start();
                             } else if (!canDelete) {
                                 Toast.makeText(requireContext(),
-                                        "Cannot delete this timer: at least one non-default timer must remain.",
+                                        "Cannot delete this timer.",
                                         Toast.LENGTH_SHORT).show();
                             }
                             return true;
