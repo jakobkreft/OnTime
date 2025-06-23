@@ -225,6 +225,27 @@ public class TimerFragment extends Fragment {
 
         updatePageIndicator();
 
+// —— add the tap-hint listener here ——
+        pageText.setOnClickListener(v -> {
+            ViewPager2 pager = requireActivity().findViewById(R.id.viewPager);
+            int total    = pager.getAdapter().getItemCount();
+            int position = pager.getCurrentItem() + 1;  // 1-based index
+
+            String msg;
+            if (position == 1 && total == 1) {
+                msg = "Edit this timer to unlock additional timers.";
+            } else if (position == 1) {
+                msg = "Swipe right to access the next timer.";
+            } else if (position == total) {
+                msg = "Edit this timer to unlock additional timers.";
+            } else {
+                msg = "Swipe up on this timer to delete it.";
+            }
+
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+        });
+
+
         return rootView;
     }
 
@@ -341,19 +362,27 @@ public class TimerFragment extends Fragment {
         progressBar.setProgress(0);
         playPauseButton.setImageResource(R.drawable.ic_play);
     }
-
+    // replace your existing setupDeleteGesture() with this entire method:
     private void setupDeleteGesture() {
-        // find both scrollviews
-        View[] swipeTargets = new View[] {
-                rootView.findViewById(R.id.content_view),
-                rootView.findViewById(R.id.right_content_view)
-        };
+        // 1) Create a GestureDetector to pick up long‐presses
+        GestureDetector gestureDetector = new GestureDetector(requireContext(),
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public void onLongPress(MotionEvent e) {
+                        Toast.makeText(requireContext(),
+                                "Swipe up to delete. Swipe right for new timer.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-        // your listener logic extracted once
+        // 2) Your existing swipe logic…
         View.OnTouchListener swipeListener = new View.OnTouchListener() {
             float startY;
             @Override
             public boolean onTouch(View v, MotionEvent ev) {
+                // First, give the GestureDetector a crack at it
+                gestureDetector.onTouchEvent(ev);
+
                 switch (ev.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
                         startY = ev.getY();
@@ -401,19 +430,22 @@ public class TimerFragment extends Fragment {
             }
         };
 
-        // attach to both scrollviews
+        // 3) Attach listener to your scrollable areas
+        View[] swipeTargets = new View[] {
+                rootView.findViewById(R.id.content_view),
+                rootView.findViewById(R.id.right_content_view)
+        };
         for (View target : swipeTargets) {
             if (target != null) {
                 target.setOnTouchListener(swipeListener);
             }
         }
 
+        // 4) Existing delete button handler remains unchanged
         deleteBtn.setOnClickListener(v -> {
-            // 1) force‐stop & fully reset
-            stopTimer();          // clears isRunning/isPaused, UI back to green+play+hide overtime
-            resetTimerState();    // also hides overtimeText, resets bg color & progress
+            stopTimer();       // clear running state
+            resetTimerState(); // reset UI
 
-            // 2) animate out & delete
             rootView.animate()
                     .translationY(-rootView.getHeight())
                     .alpha(0f)
@@ -560,7 +592,8 @@ public class TimerFragment extends Fragment {
     private long parseTimeInput(String s) {
         try {
             if (s==null || s.isEmpty()) return 0;
-            String[] p = s.split(":");
+            String normalized = s.trim().replaceAll("[\\.,\\s]+", ":");  // dots, commas or spaces → colon
+            String[] p = normalized.split(":");
             int h=0,m=0,sec=0;
             if (p.length==3) { h=Integer.parseInt(p[0]); m=Integer.parseInt(p[1]); sec=Integer.parseInt(p[2]); }
             else if (p.length==2){ m=Integer.parseInt(p[0]); sec=Integer.parseInt(p[1]); }

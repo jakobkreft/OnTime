@@ -1,0 +1,4 @@
+** First version now also on Play Store!
+* GUI fix: Added more Toasts to help with navigation.
+* Logic fix: Time can now be written with any of these: ":", ",", ".", " "
+
