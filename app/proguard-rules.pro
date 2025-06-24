@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+
+# Preserve generic signatures so Gson’s TypeToken can see the parameterized type
+-keepattributes Signature
+
+# Don’t strip or obfuscate Gson’s TypeToken itself
+-keep class com.google.gson.reflect.TypeToken { *; }
+
+# Keep your PreferencesManager (with its anonymous TypeToken subclass) intact
+-keep class si.jakobkreft.ontime.PreferencesManager { *; }
