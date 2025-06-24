@@ -1,0 +1,10 @@
+Version 2.4
+
+* proguard crash fixed
+* Multiple timers with left/right swipe navigation
+* Swipe up to reveal and delete the current timer
+* Page indicator shows position (e.g. 1/4)
+* Fixed UI state and fragment recycling glitches
+* GUI fix: Added more Toasts to help with navigation.
+* Logic fix: Time can now be written with any of these: ":", ",", ".", " "
+

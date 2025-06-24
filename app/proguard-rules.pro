@@ -21,11 +21,13 @@
 #-renamesourcefileattribute SourceFile
 
 
-# Preserve generic signatures so Gson’s TypeToken can see the parameterized type
--keepattributes Signature
+# —————————————————————————————
+# Keep generic-type signatures and inner-class metadata
+-keepattributes Signature,InnerClasses,EnclosingMethod
 
-# Don’t strip or obfuscate Gson’s TypeToken itself
+# Don’t strip or obfuscate Gson’s TypeToken and any subclasses
 -keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken { *; }
 
-# Keep your PreferencesManager (with its anonymous TypeToken subclass) intact
+# Keep your PreferencesManager (so its anonymous inner class isn’t removed)
 -keep class si.jakobkreft.ontime.PreferencesManager { *; }
