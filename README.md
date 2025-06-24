@@ -5,10 +5,17 @@
 
 
 <!-- ![](https://api.visitorbadge.io/api/VisitorHit?user=jakobkreft&repo=OnTime&countColor=%237B1E7A)  -->
-
-[<img src="https://f-droid.org/badge/get-it-on.png"
-    alt="Get it on F-Droid"
-    height="80">](https://f-droid.org/packages/si.jakobkreft.ontime) [<img height="80" src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"/>](https://github.com/jakobkreft/OnTime/releases/latest)
+<div style="white-space: nowrap;">
+  <a href="https://play.google.com/store/apps/details?id=si.jakobkreft.ontime&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1" style="display: inline-block;">
+    <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="80px"/>
+  </a>
+  <a href="https://f-droid.org/packages/si.jakobkreft.ontime" style="display: inline-block;">
+    <img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">
+  </a>
+  <a href="https://github.com/jakobkreft/OnTime/releases/latest" style="display: inline-block;">
+    <img height="80" src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"/>
+  </a>
+</div>
 
 **OnTime** is a simple app for managing time during live events, presentations, and speeches. It provides clear, color-coded alerts to help speakers stay on track.
 
