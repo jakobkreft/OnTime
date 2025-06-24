@@ -10,8 +10,8 @@ android {
         applicationId = "si.jakobkreft.ontime"
         minSdk = 24
         targetSdk = 34
-        versionCode = 4
-        versionName = "2.1"
+        versionCode = 5
+        versionName = "2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
