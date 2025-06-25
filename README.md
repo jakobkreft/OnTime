@@ -1,8 +1,10 @@
 
+
 ![Platforms](https://img.shields.io/badge/platform-Android-green) [![Latest release](https://img.shields.io/github/v/release/jakobkreft/OnTime?color=orange&label=release)](https://github.com/jakobkreft/OnTime/releases)
 
 [<img width="100%" height="auto" src="fastlane/metadata/android/en-US/images/featureGraphic.jpg" alt="OnTime feature graphic" />](https://f-droid.org/packages/si.jakobkreft.ontime/)
 
+Try it out: [Live Demo](https://jakobkreft.github.io/Projects/PresentationTimer/index.html)
 
 <!-- ![](https://api.visitorbadge.io/api/VisitorHit?user=jakobkreft&repo=OnTime&countColor=%237B1E7A)  -->
 <div style="white-space: nowrap;">
@@ -18,6 +20,7 @@
 </div>
 
 **OnTime** is a simple app for managing time during live events, presentations, and speeches. It provides clear, color-coded alerts to help speakers stay on track.
+
 
 ## Features
 - **Timer**: Set total time, yellow warning, and red warning durations.
