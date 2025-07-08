@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace = "si.jakobkreft.ontime"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "si.jakobkreft.ontime"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 7
-        versionName = "2.4"
+        targetSdk = 35
+        versionCode = 8
+        versionName = "2.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

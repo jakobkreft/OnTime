@@ -1,0 +1,3 @@
+What's new:
+- full screen background color change
+- upgrade target api version 35
