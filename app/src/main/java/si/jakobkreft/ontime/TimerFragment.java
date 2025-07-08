@@ -287,12 +287,6 @@ public class TimerFragment extends Fragment {
                     .findViewById(R.id.main_container)
                     .setBackgroundColor(color);
 
-            // system bars
-            Window window = requireActivity().getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(color);
-            window.setNavigationBarColor(color);
         }
     }
 
