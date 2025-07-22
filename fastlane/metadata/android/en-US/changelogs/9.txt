@@ -1,0 +1,5 @@
+What's new:
+- enter time with units " 1h/ 1m / 1s / 1 hrs / 1 mins / 1 sec" etc. old format still works
+- potential fix for fdroid play protect detection.
+- update .gitignore, remove .idea folder so that apk and fdroid build are identical.
+

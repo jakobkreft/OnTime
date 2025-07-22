@@ -27,6 +27,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import java.util.List;
 
@@ -38,6 +40,11 @@ public class TimerFragment extends Fragment {
     private static final long DEFAULT_TOTAL  = 25 * 60 * 1000L;
     private static final long DEFAULT_YELLOW = 10 * 60 * 1000L;
     private static final long DEFAULT_RED    = 5  * 60 * 1000L;
+
+    private static final Pattern UNIT_PATTERN = Pattern.compile(
+            "(\\d+)\\s*(h|hr|hrs|hour|hours|m|min|mins|minute|minutes|s|sec|secs|second|seconds)",
+            Pattern.CASE_INSENSITIVE
+    );
 
     public interface TimerActions {
         void onTimerChanged(int index, TimerModel updated);
@@ -584,17 +591,40 @@ public class TimerFragment extends Fragment {
     }
 
     private long parseTimeInput(String s) {
+        if (s == null) return 0L;
+        s = s.trim();
+        if (s.isEmpty()) return 0L;
+
         try {
-            if (s==null || s.isEmpty()) return 0;
-            String normalized = s.trim().replaceAll("[\\.,\\s]+", ":");  // dots, commas or spaces → colon
+            // If the user typed any unit letters, use the unit parser
+            if (s.matches(".*[hHmMsS].*")) {
+                long total = 0L;
+                Matcher m = UNIT_PATTERN.matcher(s);
+                while (m.find()) {
+                    long value = Long.parseLong(m.group(1));
+                    char unit = Character.toLowerCase(m.group(2).charAt(0));
+                    switch (unit) {
+                        case 'h': total += value * 3_600_000L; break;
+                        case 'm': total += value * 60_000L;    break;
+                        case 's': total += value * 1_000L;     break;
+                    }
+                }
+                return total;
+            }
+
+            // Fallback: hh:mm:ss / mm:ss / ss  (also handles "1 30", "1.30", etc.)
+            String normalized = s.replaceAll("[\\.,\\s]+", ":");
             String[] p = normalized.split(":");
-            int h=0,m=0,sec=0;
-            if (p.length==3) { h=Integer.parseInt(p[0]); m=Integer.parseInt(p[1]); sec=Integer.parseInt(p[2]); }
-            else if (p.length==2){ m=Integer.parseInt(p[0]); sec=Integer.parseInt(p[1]); }
-            else if (p.length==1){ sec=Integer.parseInt(p[0]); }
-            return (h*3600L + m*60L + sec)*1000L;
-        } catch(Exception ex) { return 0; }
+            int h = 0, m = 0, sec = 0;
+            if (p.length == 3)      { h = Integer.parseInt(p[0]); m = Integer.parseInt(p[1]); sec = Integer.parseInt(p[2]); }
+            else if (p.length == 2) { m = Integer.parseInt(p[0]); sec = Integer.parseInt(p[1]); }
+            else if (p.length == 1) { sec = Integer.parseInt(p[0]); }
+            return (h * 3600L + m * 60L + sec) * 1000L;
+        } catch (NumberFormatException ex) {
+            return 0L;
+        }
     }
+
 
     private String formatTime(long ms) {
         long totalSec = ms/1000;
