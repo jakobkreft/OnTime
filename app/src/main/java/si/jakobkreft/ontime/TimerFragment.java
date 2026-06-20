@@ -362,6 +362,7 @@ public class TimerFragment extends Fragment {
         applyBackgroundColor(green);
         progressBar.setProgress(0);
         playPauseButton.setImageResource(R.drawable.ic_play);
+	playPauseButton.setContentDescription("Play");
     }
     // replace your existing setupDeleteGesture() with this entire method:
     private void setupDeleteGesture() {
@@ -495,6 +496,7 @@ public class TimerFragment extends Fragment {
         actions.onTimerChanged(index, model);
 
         playPauseButton.setImageResource(R.drawable.ic_pause);
+	playPauseButton.setContentDescription("Pause");
         stopButton.setEnabled(true);
         timerHandler.post(updateTimerRunnable);
     }
@@ -516,6 +518,7 @@ public class TimerFragment extends Fragment {
         actions.onTimerChanged(index, model);
 
         playPauseButton.setImageResource(R.drawable.ic_play);
+	playPauseButton.setContentDescription("Play");
         timerHandler.removeCallbacks(updateTimerRunnable);
     }
 
@@ -545,6 +548,7 @@ public class TimerFragment extends Fragment {
         actions.onTimerChanged(index, model);
 
         playPauseButton.setImageResource(R.drawable.ic_play);
+	playPauseButton.setContentDescription("Play");
         timerHandler.removeCallbacks(updateTimerRunnable);
 
         @ColorInt int green = ContextCompat.getColor(requireContext(), R.color.timer_green);

@@ -199,7 +199,7 @@
                     android:layout_height="64dp"
                     android:layout_marginRight="30dp"
                     android:background="?attr/selectableItemBackground"
-                    android:contentDescription="Play/Pause"
+                    android:contentDescription="Play"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_play"
                     app:tint="#FFFFFF" />
