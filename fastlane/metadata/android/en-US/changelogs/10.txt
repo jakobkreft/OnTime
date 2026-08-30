@@ -1,0 +1,7 @@
+Version 3.0 — rebuilt from the ground up.
+
+• Saved timers now live in a named "Timers" list instead of hidden swipe gestures.
+• Everything fits the screen at once, in either orientation. No scrolling.
+• Rotating the device no longer disturbs a running timer: colour, countdown and overtime all carry through.
+• Durations accept 25:00, 90, 25m or 1h 30m, and the editor shows what it understood.
+• Timers saved in 2.6 carry over.

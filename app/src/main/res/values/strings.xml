@@ -1,29 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OnTime</string>
-    <string name="AboutContentString"><string name="AboutContentString">
-<b>Source Code:</b> https://github.com/jakobkreft/OnTime
-\n\n
-<b>Feedback:</b> Please share your feedback here: https://github.com/jakobkreft/OnTime/issues/new/choose
-\n\n
-Thank you!
-\n\n
-OnTime is a simple app for managing time during live events, presentations, and speeches. It provides clear, color-coded alerts to help speakers stay on track.
-\n\n
-<b>Features:</b>\n
-- <b>Timer</b>: Set total time, yellow warning, and red warning durations.\n
-- <b>Color alerts like a traffic light</b>:
-  - Green: Time remaining.
-  - Yellow: Warning phase.
-  - Red: Critical or overtime.\n
-- <b>Pause and Resume</b>\n
-- <b>Overtime Timer</b>:  Shows time over the set amount.\n
-- <b>Saved Settings</b>: Retains your preferences between sessions.\n
-- <b>Multiple Timers</b>: Swipe right to save a new timer. Swipe up do delete it.\n
 
-\n\n
-<b>License:</b> This project is licensed under the GPL-3.0-or-later. See https://github.com/jakobkreft/OnTime/blob/master/LICENSE for details.
-\n\n
-Developed by Jakob Kreft.
-</string>
-</string>
+    <!-- Run screen -->
+    <string name="total_time">Total</string>
+    <string name="yellow_warning">Yellow at</string>
+    <string name="red_warning">Red at</string>
+    <string name="phase_green">On track</string>
+    <string name="phase_yellow">Yellow warning</string>
+    <string name="phase_red">Red warning</string>
+    <string name="phase_overtime">Overtime</string>
+    <string name="overtime_value">+%1$s</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="stop">Stop</string>
+    <string name="choose_timer">Choose a timer</string>
+    <string name="about">About</string>
+    <string name="stop_to_edit">Stop the timer to change its times.</string>
+    <string name="time_remaining_of">%1$s remaining of %2$s</string>
+    <string name="time_over_by">Over by %1$s</string>
+
+    <!-- Timer list -->
+    <string name="timers">Timers</string>
+    <string name="back">Back</string>
+    <string name="new_timer">New timer</string>
+    <string name="more_options">More options for %1$s</string>
+    <string name="edit">Edit</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="delete">Delete</string>
+    <string name="preset_selected">Selected</string>
+    <string name="running">Running</string>
+    <string name="paused">Paused</string>
+    <string name="last_timer_kept">The last timer can\'t be deleted.</string>
+    <string name="timer_deleted">Deleted “%1$s”.</string>
+    <string name="undo">Undo</string>
+    <string name="default_preset_name">Timer %1$d</string>
+    <string name="copy_of">%1$s copy</string>
+
+    <!-- Editor -->
+    <string name="edit_timer">Edit timer</string>
+    <string name="name">Name</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="duration_hint">25:00, 25m, 1h 30m</string>
+    <string name="parsed_as">= %1$s</string>
+    <string name="error_unreadable">Try 25:00, 90 or 1h 30m</string>
+    <string name="error_total_zero">Must be longer than zero</string>
+    <string name="error_yellow_not_less">Must be less than the total</string>
+    <string name="error_red_above_yellow">Must not be later than the yellow warning</string>
+    <string name="error_name_blank">Give the timer a name</string>
+    <string name="editing_resets_run">Saving stops this timer and resets it.</string>
+
+    <!-- About -->
+    <string name="version">Version %1$s</string>
+    <string name="about_intro">OnTime keeps speakers on schedule. Set a total time and two warning
+        points, and the whole screen turns yellow, then red, so a glance is enough. When the time
+        runs out the clock keeps counting so you know exactly how far over you ran.</string>
+    <string name="about_features_title">Features</string>
+    <string name="about_feature_thresholds">Total time with yellow and red warnings, each set to the time remaining.</string>
+    <string name="about_feature_colors">The background changes sharply between green, yellow and red.</string>
+    <string name="about_feature_overtime">The overtime clock keeps running past zero.</string>
+    <string name="about_feature_presets">Save as many timers as you need and switch between them from the Timers list.</string>
+    <string name="about_feature_awake">The screen stays on while a timer is on screen.</string>
+    <string name="about_feature_rotation">Rotating the device never disturbs a running timer.</string>
+    <string name="about_source">Source code</string>
+    <string name="about_feedback">Report an issue</string>
+    <string name="about_license">GPL-3.0-or-later</string>
+    <string name="about_author">Developed by Jakob Kreft</string>
+    <string name="url_source" translatable="false">https://github.com/jakobkreft/OnTime</string>
+    <string name="url_issues" translatable="false">https://github.com/jakobkreft/OnTime/issues/new/choose</string>
+    <string name="url_license" translatable="false">https://github.com/jakobkreft/OnTime/blob/master/LICENSE</string>
 </resources>

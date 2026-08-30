@@ -1,12 +1,15 @@
-OnTime is a simple app for managing time during live events, presentations, and speeches. It provides clear, color-coded alerts to help speakers stay on track.
+OnTime keeps speakers on schedule at live events, presentations and lectures.
+
+Set a total time and two warning points, then start it. The whole screen is the signal: green while you have room, yellow when you should start wrapping up, red when you are nearly out. When the time runs out the clock keeps counting upwards, so you always know exactly how far over you ran.
 
 Features:
-- Timer: Set total time, yellow warning, and red warning durations.
-- Color alerts like a traffic light:
-  - Green: Time remaining.
-  - Yellow: Warning phase.
-  - Red: Critical or overtime.
-- Pause and Resume
-- Overtime Timer:  Shows time over the set amount.
-- Saved Settings: Retains your preferences between sessions.
+- Total time with yellow and red warnings, each set as the time remaining.
+- The background changes sharply between green, yellow and red — readable across a room.
+- The overtime clock keeps running past zero.
+- Save as many timers as you need, name them, and switch between them from the Timers list.
+- The screen stays on while a timer is on screen.
+- Rotating the device never disturbs a running timer.
+- Everything fits on one screen. Nothing to scroll, nothing to hunt for.
+- No permissions, no network access, no tracking.
 
+Durations can be typed the way you think of them: 25:00, 90, 25m or 1h 30m.

@@ -1,33 +1,9 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
-
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
-
-
-# —————————————————————————————
-# Keep generic-type signatures and inner-class metadata
--keepattributes Signature,InnerClasses,EnclosingMethod
-
-# Don’t strip or obfuscate Gson’s TypeToken and any subclasses
--keep class com.google.gson.reflect.TypeToken { *; }
--keep class * extends com.google.gson.reflect.TypeToken { *; }
-
-# Keep your PreferencesManager (so its anonymous inner class isn’t removed)
--keep class si.jakobkreft.ontime.PreferencesManager { *; }
+# kotlinx.serialization generates a serializer for every @Serializable class and looks it up
+# through the class's synthetic Companion. R8 has rules for this shipped with the library, so the
+# only thing left to state is that the generated serializers must survive.
+-keepclassmembers class si.jakobkreft.ontime.data.** {
+    *** Companion;
+}
+-keepclasseswithmembers class si.jakobkreft.ontime.data.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}

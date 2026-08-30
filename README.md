@@ -19,31 +19,54 @@ Try it out: [Live Demo](https://jakobkreft.github.io/Projects/PresentationTimer/
   </a>
 </div>
 
-**OnTime** is a simple app for managing time during live events, presentations, and speeches. It provides clear, color-coded alerts to help speakers stay on track.
-
+**OnTime** keeps speakers on schedule at live events, presentations and lectures. The whole screen
+is the signal: green while there is room, yellow when it is time to wrap up, red when the time is
+nearly gone. Past zero the clock keeps counting upwards, so you always know how far over you ran.
 
 ## Features
-- **Timer**: Set total time, yellow warning, and red warning durations.
-- **Color alerts like a traffic light:**
-  - **Green**: Time remaining.
-  - **Yellow**: Warning phase.
-  - **Red**: Critical or overtime.
-- **Pause and Resume**
-- **Overtime Timer**: Shows time over the set amount.
-- **Saved Settings**: Retains your preferences between sessions.
-- **Multiple Timers**: Swipe left and right between saved timers.
-- **Delete Timer**: Swipe up to reveal and delete the current timer.
+
+- **Three durations per timer** — total time, plus yellow and red warnings set as the time remaining.
+- **Sharp colour changes**, readable from across a room. No fades, no gradients.
+- **Overtime clock** that keeps running past zero.
+- **Named timers**, as many as you need, in a Timers list you can duplicate and delete from.
+- **The screen stays on** while a timer is on screen.
+- **Rotation never disturbs a running timer** — colour, countdown and overtime all carry through.
+- **Everything fits one screen.** Nothing scrolls, in either orientation.
+- **No permissions**, no network access, no tracking.
 
 ## Usage
-1. Set your desired total, yellow, and red warning times.
-2. Start the timer with the play button.
-3. During presentation , glance the app for background color to manage your time:
-   - Green: On track.
-   - Yellow: Time running out.
-   - Red: Time running out or over.
-4. Pause, resume, or reset as needed.
-5. Swipe right to access a new timer, this way you can have multiple saved presets.
-6. Swipe up to reveal and delete one of the timers.
+
+1. Set the total time and the two warning points. Durations can be typed as `25:00`, `90`, `25m` or
+   `1h 30m`; the editor shows what it understood before you save.
+2. Press play. Glance at the background colour to see where you stand.
+3. Tap the timer's name in the top bar to switch to another saved timer, or to add one.
+
+## Building
+
+Requires a JDK 17 or newer and the Android SDK. Everything else is fetched by the Gradle wrapper.
+
+```sh
+./gradlew assembleDebug          # debug APK
+./gradlew testDebugUnitTest lint # tests and static analysis
+./gradlew assembleRelease        # unsigned, minified release APK
+```
+
+The release build is deliberately reproducible: no VCS metadata, no dependency-info block, no
+signing configuration, and every dependency pinned in `gradle/libs.versions.toml`.
+
+## Architecture
+
+Kotlin and Jetpack Compose, one activity, no fragments.
+
+| | |
+|---|---|
+| `domain/` | `DurationText` parses and formats durations; `TimerSnapshot` turns a preset plus an elapsed time into the phase, the remaining time and the overtime. Both are pure and unit-tested. |
+| `data/` | `Preset` and `RunState`, persisted as one JSON document via `PresetRepository`. |
+| `ui/` | `TimerViewModel` holds the state; `RunScreen`, `PresetsScreen` and `AboutScreen` draw it. |
+
+A running timer stores *when it started*, never how far it has got, and every displayed value is
+derived from that timestamp and the clock. That is why rotation, backgrounding and process death
+cannot disturb a run: there is no elapsed-time state to lose.
 
 ## License
 

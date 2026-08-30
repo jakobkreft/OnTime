@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="timer_green">#47863E</color> <!-- Replace with your desired green shade -->
-    <color name="timer_yellow">#D7A614</color> <!-- Replace with your desired yellow shade -->
-    <color name="timer_red">#B31212</color> <!-- Replace with your desired red shade -->
+    <!-- Painted behind the window before Compose draws, so launching does not flash.
+         Mirrors PhaseColors.Green in ui/Theme.kt, where the traffic-light palette lives. -->
+    <color name="window_background">#47863E</color>
 </resources>
