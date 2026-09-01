@@ -1,0 +1,3 @@
+# GitHub renders a Sponsor button from this file, and F-Droid's `fdroid update` reads it from
+# upstream repos to fill in the Donate link shown on the app's listing.
+buy_me_a_coffee: jaak
