@@ -69,7 +69,10 @@ fun RunScreen(
 
     CompositionLocalProvider(LocalContentColor provides OnColor) {
         BoxWithConstraints(modifier.fillMaxSize().padding(horizontal = 20.dp)) {
-            val sideBySide = maxWidth > maxHeight && maxHeight < 520.dp
+            // Targeting API 37 means the window can be any size on a large screen, so the fixed
+            // chrome shrinks whenever height is short — not only when the device is landscape.
+            val shortWindow = maxHeight < 520.dp
+            val sideBySide = shortWindow && maxWidth > maxHeight
 
             Column(Modifier.fillMaxSize()) {
                 Header(
@@ -92,15 +95,15 @@ fun RunScreen(
                         Column(Modifier.weight(1.45f).fillMaxHeight()) {
                             Clock(state, Modifier.weight(1f))
                             ProgressTrack(state.snapshot.progress)
-                            Controls(state, onToggle, onStop, compact = true)
+                            Controls(state, onToggle, onStop, compact = shortWindow)
                         }
                     }
                 } else {
-                    Spacer(Modifier.height(8.dp))
+                    if (!shortWindow) Spacer(Modifier.height(8.dp))
                     ThresholdRow(state.selected, onEditTimes)
                     Clock(state, Modifier.weight(1f))
                     ProgressTrack(state.snapshot.progress)
-                    Controls(state, onToggle, onStop, compact = false)
+                    Controls(state, onToggle, onStop, compact = shortWindow)
                 }
             }
         }
