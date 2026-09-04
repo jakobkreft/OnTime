@@ -34,6 +34,7 @@ Try it in a browser first: [live demo](https://jakobkreft.github.io/Projects/Pre
 - **Sharp colour changes**, readable from across a room. No fades, no gradients.
 - **Overtime clock** that keeps running past zero.
 - **Named timers**, as many as you need, in a list you can duplicate and delete from.
+- **Full-screen clock** in landscape — tap the clock, or the expand icon, for the time and nothing else. Tap anywhere to come back.
 - **The screen stays on** while a timer is on screen.
 - **Rotation never disturbs a running timer** — colour, countdown and overtime all carry through.
 - **Everything fits one screen.** Nothing scrolls, in either orientation.

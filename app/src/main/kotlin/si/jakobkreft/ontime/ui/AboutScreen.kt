@@ -110,6 +110,7 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 R.string.about_feature_colors,
                 R.string.about_feature_overtime,
                 R.string.about_feature_presets,
+                R.string.about_feature_fullscreen,
                 R.string.about_feature_awake,
                 R.string.about_feature_rotation,
             ).forEach { Bullet(stringResource(it)) }
@@ -121,6 +122,7 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             ) {
                 val source = stringResource(R.string.url_source)
                 val issues = stringResource(R.string.url_issues)
+                val support = stringResource(R.string.url_support)
                 val license = stringResource(R.string.url_license)
                 OutlinedButton(
                     onClick = { open(source) },
@@ -130,6 +132,10 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     onClick = { open(issues) },
                     modifier = Modifier.fillMaxWidth(),
                 ) { Text(stringResource(R.string.about_feedback)) }
+                OutlinedButton(
+                    onClick = { open(support) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.about_support)) }
                 OutlinedButton(
                     onClick = { open(license) },
                     modifier = Modifier.fillMaxWidth(),

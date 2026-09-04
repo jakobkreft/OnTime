@@ -1,7 +1,12 @@
 package si.jakobkreft.ontime.ui
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -28,6 +33,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +52,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import si.jakobkreft.ontime.R
 import si.jakobkreft.ontime.data.Preset
 import si.jakobkreft.ontime.data.RunStatus
@@ -66,19 +80,42 @@ fun RunScreen(
     modifier: Modifier = Modifier,
 ) {
     KeepScreenOn()
+    var fullScreen by rememberSaveable { mutableStateOf(false) }
 
     CompositionLocalProvider(LocalContentColor provides OnColor) {
-        BoxWithConstraints(modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+        BoxWithConstraints(modifier.fillMaxSize()) {
             // Targeting API 37 means the window can be any size on a large screen, so the fixed
             // chrome shrinks whenever height is short — not only when the device is landscape.
             val shortWindow = maxHeight < 520.dp
-            val sideBySide = shortWindow && maxWidth > maxHeight
+            val landscape = maxWidth > maxHeight
+            val sideBySide = shortWindow && landscape
 
-            Column(Modifier.fillMaxSize()) {
+            // Full screen only earns its keep in a landscape window. In portrait the clock is
+            // already limited by the width of the screen, so dropping the chrome around it would
+            // buy no extra size at all.
+            LaunchedEffect(landscape) { if (!landscape) fullScreen = false }
+            BackHandler(enabled = fullScreen) { fullScreen = false }
+            SystemBarsHidden(fullScreen)
+
+            if (fullScreen) {
+                FullScreenClock(state, onExit = { fullScreen = false })
+                return@BoxWithConstraints
+            }
+
+            val enterFullScreen: Modifier = if (landscape) {
+                Modifier.noRippleClickable(stringResource(R.string.enter_full_screen)) {
+                    fullScreen = true
+                }
+            } else {
+                Modifier
+            }
+
+            Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
                 Header(
                     presetName = state.selected.name,
                     onOpenPresets = onOpenPresets,
                     onOpenAbout = onOpenAbout,
+                    onEnterFullScreen = { fullScreen = true }.takeIf { landscape },
                 )
 
                 if (sideBySide) {
@@ -93,7 +130,7 @@ fun RunScreen(
                             ThresholdList(state.selected, onEditTimes)
                         }
                         Column(Modifier.weight(1.45f).fillMaxHeight()) {
-                            Clock(state, Modifier.weight(1f))
+                            Clock(state, Modifier.weight(1f).then(enterFullScreen))
                             ProgressTrack(state.snapshot.progress)
                             Controls(state, onToggle, onStop, compact = shortWindow)
                         }
@@ -101,7 +138,7 @@ fun RunScreen(
                 } else {
                     if (!shortWindow) Spacer(Modifier.height(8.dp))
                     ThresholdRow(state.selected, onEditTimes)
-                    Clock(state, Modifier.weight(1f))
+                    Clock(state, Modifier.weight(1f).then(enterFullScreen))
                     ProgressTrack(state.snapshot.progress)
                     Controls(state, onToggle, onStop, compact = shortWindow)
                 }
@@ -110,11 +147,74 @@ fun RunScreen(
     }
 }
 
+/**
+ * The clock and nothing else. Everything a presenter does not need mid-talk is gone — the preset
+ * name, the warning times, the progress bar and the transport controls — which roughly doubles the
+ * size of the digits on a phone held sideways. A tap anywhere returns.
+ *
+ * The overtime line still reserves its space here. It is the one number that matters once the time
+ * runs out, and letting it appear would otherwise resize the clock at exactly the wrong moment.
+ */
+@Composable
+private fun FullScreenClock(state: UiState, onExit: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .noRippleClickable(stringResource(R.string.exit_full_screen), onExit)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+    ) {
+        Clock(state, Modifier.fillMaxSize())
+    }
+}
+
+/**
+ * A whole-surface tap target: no ripple, because the surface is the screen and a ripple across it
+ * would read as a glitch rather than as feedback.
+ */
+@Composable
+private fun Modifier.noRippleClickable(label: String, onClick: () -> Unit): Modifier {
+    val interactionSource = remember { MutableInteractionSource() }
+    return clickable(
+        interactionSource = interactionSource,
+        indication = null,
+        onClickLabel = label,
+        onClick = onClick,
+    )
+}
+
+/**
+ * Hides the status and navigation bars while [hidden]. They stay reachable with an edge swipe, and
+ * are always restored when this leaves the composition.
+ */
+@Composable
+private fun SystemBarsHidden(hidden: Boolean) {
+    val view = LocalView.current
+    if (view.isInEditMode) return
+    DisposableEffect(hidden) {
+        val window = view.context.findActivity()?.window
+        val controller = window?.let { WindowCompat.getInsetsController(it, view) }
+        controller?.apply {
+            systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            if (hidden) hide(WindowInsetsCompat.Type.systemBars())
+            else show(WindowInsetsCompat.Type.systemBars())
+        }
+        onDispose { if (hidden) controller?.show(WindowInsetsCompat.Type.systemBars()) }
+    }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
 @Composable
 private fun Header(
     presetName: String,
     onOpenPresets: () -> Unit,
     onOpenAbout: () -> Unit,
+    onEnterFullScreen: (() -> Unit)?,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -142,11 +242,21 @@ private fun Header(
                 contentDescription = stringResource(R.string.choose_timer),
             )
         }
-        IconButton(onClick = onOpenAbout) {
-            Icon(
-                painter = painterResource(R.drawable.ic_info),
-                contentDescription = stringResource(R.string.about),
-            )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (onEnterFullScreen != null) {
+                IconButton(onClick = onEnterFullScreen) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_fullscreen),
+                        contentDescription = stringResource(R.string.enter_full_screen),
+                    )
+                }
+            }
+            IconButton(onClick = onOpenAbout) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_info),
+                    contentDescription = stringResource(R.string.about),
+                )
+            }
         }
     }
 }

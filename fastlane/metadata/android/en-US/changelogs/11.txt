@@ -1,0 +1,2 @@
+New feature:
+• Full-screen clock. Turn the phone sideways and tap the clock, or the expand icon, for a view with nothing on it but the time. Tap anywhere to come back.
