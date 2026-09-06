@@ -16,6 +16,20 @@ object PhaseColors {
     val Red = Color(0xFFB31212)
 }
 
+/**
+ * The three colours of the app icon, for accents rather than fills.
+ *
+ * Deliberately not [PhaseColors]: those are flat grounds that fill the whole screen, while these
+ * are hairlines on a dark surface. The icon's own hues are fully saturated (#09FF00, #FFC300,
+ * #FF0000) and would read as neon at that size, so each is held at a single perceptual lightness
+ * and chroma in OKLCH — the same three hues, balanced against each other as a set.
+ */
+object LogoColors {
+    val Green = Color(0xFF56B04F)
+    val Amber = Color(0xFFC48F00)
+    val Red = Color(0xFFEA6C5C)
+}
+
 val Phase.color: Color
     get() = when (this) {
         Phase.GREEN -> PhaseColors.Green

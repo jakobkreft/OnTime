@@ -3,6 +3,7 @@ package si.jakobkreft.ontime.ui
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.core.net.toUri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -113,14 +114,17 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 OutlinedButton(
                     onClick = { open(source) },
                     modifier = Modifier.fillMaxWidth(),
+                    border = BorderStroke(1.dp, LogoColors.Green),
                 ) { Text(stringResource(R.string.about_source)) }
                 OutlinedButton(
                     onClick = { open(issues) },
                     modifier = Modifier.fillMaxWidth(),
+                    border = BorderStroke(1.dp, LogoColors.Amber),
                 ) { Text(stringResource(R.string.about_feedback)) }
                 OutlinedButton(
                     onClick = { open(support) },
                     modifier = Modifier.fillMaxWidth(),
+                    border = BorderStroke(1.dp, LogoColors.Red),
                 ) { Text(stringResource(R.string.about_support)) }
                 OutlinedButton(
                     onClick = { open(license) },
