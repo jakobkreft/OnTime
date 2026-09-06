@@ -59,21 +59,13 @@
     <string name="about_intro">OnTime keeps speakers on schedule. Set a total time and two warning
         points, and the whole screen turns yellow, then red, so a glance is enough. When the time
         runs out the clock keeps counting so you know exactly how far over you ran.</string>
-    <string name="about_features_title">Features</string>
-    <string name="about_feature_thresholds">Total time with yellow and red warnings, each set to the time remaining.</string>
-    <string name="about_feature_colors">The background changes sharply between green, yellow and red.</string>
-    <string name="about_feature_overtime">The overtime clock keeps running past zero.</string>
-    <string name="about_feature_presets">Save as many timers as you need and switch between them from the Timers list.</string>
-    <string name="about_feature_fullscreen">Turn the phone sideways and tap the clock for a full-screen view with nothing on it but the time.</string>
-    <string name="about_feature_awake">The screen stays on while a timer is on screen.</string>
-    <string name="about_feature_rotation">Rotating the device never disturbs a running timer.</string>
     <string name="about_source">Source code</string>
     <string name="about_feedback">Report an issue</string>
-    <string name="about_support">Buy me a coffee</string>
+    <string name="about_support">Support me on Ko-fi</string>
     <string name="about_license">GPL-3.0-or-later</string>
     <string name="about_author">Developed by Jakob Kreft</string>
     <string name="url_source" translatable="false">https://github.com/jakobkreft/OnTime</string>
     <string name="url_issues" translatable="false">https://github.com/jakobkreft/OnTime/issues/new/choose</string>
-    <string name="url_support" translatable="false">https://buymeacoffee.com/jaak</string>
+    <string name="url_support" translatable="false">https://ko-fi.com/jakobk</string>
     <string name="url_license" translatable="false">https://github.com/jakobkreft/OnTime/blob/master/LICENSE</string>
 </resources>

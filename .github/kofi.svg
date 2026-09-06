@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="176" height="36" viewBox="0 0 176 36" role="img" aria-label="Support on Ko-fi">
+  <rect width="176" height="36" rx="8" fill="#FF5E5B"/>
+  <g transform="translate(14 8)" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1 6h13v7a4 4 0 0 1-4 4H5a4 4 0 0 1-4-4z"/>
+    <path d="M14 8h2.4a2.5 2.5 0 0 1 0 5H14"/>
+    <path d="M4.5 2.6V4M7.8 1.4V4M11.1 2.6V4"/>
+  </g>
+  <text x="44" y="23" font-family="Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#FFFFFF">Support on Ko-fi</text>
+</svg>

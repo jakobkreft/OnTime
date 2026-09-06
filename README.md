@@ -95,4 +95,4 @@ This project is licensed under the **GPL-3.0-or-later**. See the [LICENSE](./LIC
 
 Developed by **Jakob Kreft**.
 
-<a href="https://buymeacoffee.com/jaak"><img src=".github/buymeacoffee.svg" alt="Buy me a coffee" height="32"></a>
+<a href="https://ko-fi.com/jakobk"><img src=".github/kofi.svg" alt="Support on Ko-fi" height="32"></a>

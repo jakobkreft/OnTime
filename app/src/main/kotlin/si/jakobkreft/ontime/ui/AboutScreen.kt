@@ -6,14 +6,12 @@ import androidx.core.net.toUri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -104,18 +102,6 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             )
 
             Spacer(Modifier.height(24.dp))
-            SectionTitle(stringResource(R.string.about_features_title))
-            listOf(
-                R.string.about_feature_thresholds,
-                R.string.about_feature_colors,
-                R.string.about_feature_overtime,
-                R.string.about_feature_presets,
-                R.string.about_feature_fullscreen,
-                R.string.about_feature_awake,
-                R.string.about_feature_rotation,
-            ).forEach { Bullet(stringResource(it)) }
-
-            Spacer(Modifier.height(24.dp))
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -150,27 +136,5 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             )
             Spacer(Modifier.height(32.dp))
         }
-    }
-}
-
-@Composable
-private fun SectionTitle(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-    )
-}
-
-@Composable
-private fun Bullet(text: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Text("•", style = MaterialTheme.typography.bodyLarge)
-        Spacer(Modifier.width(10.dp))
-        Text(text, style = MaterialTheme.typography.bodyLarge)
     }
 }
