@@ -1,0 +1,4 @@
+What's new:
+• A simpler About page, a short description and the links, without repeating a feature list you can already see in the app.
+• The links there now carry the green, amber and red of the app icon.
+• The support link points to Ko-fi.
