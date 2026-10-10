@@ -43,11 +43,12 @@ import si.jakobkreft.ontime.R
 fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
-    fun open(url: String) {
+    fun open(url: String, app: String? = null) {
         try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()).setPackage(app))
         } catch (_: ActivityNotFoundException) {
-            // No browser installed; nothing useful to fall back to.
+            // Without the requested app, let any app take the link; without a browser, give up.
+            if (app != null) open(url)
         }
     }
 
@@ -109,7 +110,6 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             ) {
                 val source = stringResource(R.string.url_source)
                 val issues = stringResource(R.string.url_issues)
-                val support = stringResource(R.string.url_support)
                 val license = stringResource(R.string.url_license)
                 OutlinedButton(
                     onClick = { open(source) },
@@ -121,11 +121,23 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxWidth(),
                     border = BorderStroke(1.dp, LogoColors.Amber),
                 ) { Text(stringResource(R.string.about_feedback)) }
-                OutlinedButton(
-                    onClick = { open(support) },
-                    modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, LogoColors.Red),
-                ) { Text(stringResource(R.string.about_support)) }
+                // Google Play does not allow links to outside payment, so its build asks for a
+                // rating instead of linking to Ko-fi.
+                if (BuildConfig.PLAY_STORE) {
+                    val rate = stringResource(R.string.url_rate)
+                    OutlinedButton(
+                        onClick = { open(rate, app = PLAY_STORE_PACKAGE) },
+                        modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, LogoColors.Red),
+                    ) { Text(stringResource(R.string.about_rate)) }
+                } else {
+                    val support = stringResource(R.string.url_support)
+                    OutlinedButton(
+                        onClick = { open(support) },
+                        modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, LogoColors.Red),
+                    ) { Text(stringResource(R.string.about_support)) }
+                }
                 OutlinedButton(
                     onClick = { open(license) },
                     modifier = Modifier.fillMaxWidth(),
@@ -142,3 +154,5 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         }
     }
 }
+
+private const val PLAY_STORE_PACKAGE = "com.android.vending"

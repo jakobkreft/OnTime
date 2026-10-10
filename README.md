@@ -58,7 +58,8 @@ whose distribution is pinned by checksum.
 ```sh
 ./gradlew assembleDebug           # debug APK
 ./gradlew testDebugUnitTest lint  # unit tests and static analysis
-./gradlew assembleRelease         # unsigned, minified release APK
+./gradlew assembleRelease         # unsigned, minified release APK (F-Droid, GitHub)
+./gradlew bundlePlay              # unsigned, minified bundle for Google Play
 ```
 
 The release build is deliberately reproducible: no VCS metadata, no dependency-info block, no

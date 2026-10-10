@@ -12,11 +12,15 @@ android {
         applicationId = "si.jakobkreft.ontime"
         minSdk = 24
         targetSdk = 37
-        versionCode = 12
-        versionName = "3.2"
+        versionCode = 13
+        versionName = "3.3"
+
+        buildConfigField("boolean", "PLAY_STORE", "false")
     }
 
     buildTypes {
+        // The F-Droid and GitHub build. F-Droid's recipe runs plain `assembleRelease`, so this
+        // one keeps its name and output path.
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -26,6 +30,12 @@ android {
             )
             // Reproducible builds: keep build-machine state out of the APK.
             vcsInfo.include = false
+        }
+        // The Google Play build (`bundlePlay`). Play does not allow links to outside payment, so
+        // this one asks for a rating where the release build links to Ko-fi.
+        create("play") {
+            initWith(getByName("release"))
+            buildConfigField("boolean", "PLAY_STORE", "true")
         }
     }
 

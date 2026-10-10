@@ -8,6 +8,7 @@ local.properties
 # Build outputs
 /app/debug/
 /app/release/
+/app/play/
 /build/
 captures/
 .externalNativeBuild/

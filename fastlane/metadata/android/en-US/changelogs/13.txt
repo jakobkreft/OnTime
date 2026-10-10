@@ -1,0 +1,3 @@
+What's new:
+• The Google Play version now has a "Rate on Google Play" button on the About page, in place of the Ko-fi link.
+• Nothing changes in the F-Droid and GitHub version.

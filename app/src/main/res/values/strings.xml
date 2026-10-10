@@ -62,10 +62,12 @@
     <string name="about_source">Source code</string>
     <string name="about_feedback">Report an issue</string>
     <string name="about_support">Support me on Ko-fi</string>
+    <string name="about_rate">Rate on Google Play</string>
     <string name="about_license">GPL-3.0-or-later</string>
     <string name="about_author">Developed by Jakob Kreft</string>
     <string name="url_source" translatable="false">https://github.com/jakobkreft/OnTime</string>
     <string name="url_issues" translatable="false">https://github.com/jakobkreft/OnTime/issues/new/choose</string>
     <string name="url_support" translatable="false">https://ko-fi.com/jakobk</string>
+    <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=si.jakobkreft.ontime</string>
     <string name="url_license" translatable="false">https://github.com/jakobkreft/OnTime/blob/master/LICENSE</string>
 </resources>
