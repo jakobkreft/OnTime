@@ -1,0 +1,3 @@
+What's new:
+• Hide seconds: a new switch in the timer editor shows whole minutes while the timer runs. Pause to see the seconds.
+• Renaming a running timer no longer warns that it will be reset.

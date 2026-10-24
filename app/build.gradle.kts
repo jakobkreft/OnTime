@@ -12,8 +12,8 @@ android {
         applicationId = "si.jakobkreft.ontime"
         minSdk = 24
         targetSdk = 37
-        versionCode = 13
-        versionName = "3.3"
+        versionCode = 14
+        versionName = "3.4"
 
         buildConfigField("boolean", "PLAY_STORE", "false")
     }
