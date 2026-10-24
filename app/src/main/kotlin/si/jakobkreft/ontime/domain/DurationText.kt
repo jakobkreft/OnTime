@@ -46,6 +46,13 @@ object DurationText {
     }
 
     /**
+     * Where the seconds sit in a string from [format]: the separator before them and both digits.
+     * Everything ahead of this range is whole minutes (and hours), which is what remains when the
+     * seconds are hidden — so hiding them always rounds down.
+     */
+    fun secondsField(formatted: String): IntRange = (formatted.length - 3) until formatted.length
+
+    /**
      * A string with the same shape as the longest value a countdown from [totalMillis] can show.
      * Digits are tabular, so laying the timer out against this keeps the type size steady for the
      * whole run instead of resizing every time a digit drops.

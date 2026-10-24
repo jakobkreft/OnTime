@@ -366,21 +366,32 @@ private fun Clock(state: UiState, modifier: Modifier = Modifier) {
         )
 
         AutoSizeText(
-            text = display,
             measureText = DurationText.widestForCountdown(state.selected.totalMillis),
             // Built from scratch rather than from a Material style so the line height follows the
             // font size; a fixed line height would make the fitting arithmetic meaningless.
             style = ClockStyle,
             modifier = Modifier.fillMaxWidth().weight(1f, fill = false).padding(vertical = 4.dp),
-        )
+        ) { fitted ->
+            // At zero there is nothing left to hide: the countdown lands on a plain 0:00 and the
+            // overtime line takes over.
+            ClockText(
+                text = display,
+                duration = display,
+                secondsHidden = snapshot.secondsHidden && !snapshot.isOvertime,
+                style = fitted,
+            )
+        }
 
         // The overtime line keeps its space at all times so nothing shifts the moment it appears.
-        Text(
+        ClockText(
             text = stringResource(R.string.overtime_value, overtime),
-            style = MaterialTheme.typography.headlineMedium.copy(fontFeatureSettings = "tnum"),
-            fontWeight = FontWeight.SemiBold,
-            color = if (snapshot.isOvertime) OnColor else Color.Transparent,
-            maxLines = 1,
+            duration = overtime,
+            secondsHidden = snapshot.secondsHidden,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                color = if (snapshot.isOvertime) OnColor else Color.Transparent,
+                fontWeight = FontWeight.SemiBold,
+                fontFeatureSettings = "tnum",
+            ),
         )
     }
 }

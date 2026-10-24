@@ -53,6 +53,8 @@
     <string name="error_red_above_yellow">Must not be later than the yellow warning</string>
     <string name="error_name_blank">Give the timer a name</string>
     <string name="editing_resets_run">Saving stops this timer and resets it.</string>
+    <string name="hide_seconds">Hide seconds</string>
+    <string name="hide_seconds_detail">Whole minutes while running. Pause to see the seconds.</string>
 
     <!-- About -->
     <string name="version">Version %1$s</string>

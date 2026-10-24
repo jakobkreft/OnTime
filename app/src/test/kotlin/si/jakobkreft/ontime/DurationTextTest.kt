@@ -91,4 +91,16 @@ class DurationTextTest {
         assertEquals(0L, DurationText.floorToSecond(999))
         assertEquals(1_000L, DurationText.floorToSecond(1_999))
     }
+
+    @Test
+    fun `covering the seconds field leaves whole minutes, rounded down`() {
+        fun minutesOf(millis: Long): String {
+            val formatted = DurationText.format(millis)
+            return formatted.removeRange(DurationText.secondsField(formatted))
+        }
+        assertEquals("7", minutesOf(7 * 60_000L + 59_000L))
+        assertEquals("25", minutesOf(25 * 60_000L))
+        assertEquals("0", minutesOf(59_000L))
+        assertEquals("1:02", minutesOf(3_723_000L))
+    }
 }

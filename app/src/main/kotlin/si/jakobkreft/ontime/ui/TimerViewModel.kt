@@ -114,11 +114,7 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun savePreset(preset: Preset) = repository.update { data ->
         val previous = data.presets.firstOrNull { it.id == preset.id }
-        val timingChanged = previous != null && (
-            previous.totalMillis != preset.totalMillis ||
-                previous.yellowMillis != preset.yellowMillis ||
-                previous.redMillis != preset.redMillis
-            )
+        val timingChanged = previous != null && !previous.hasSameTimingAs(preset)
         data.copy(
             presets = data.presets.map { if (it.id == preset.id) preset else it },
             runs = if (timingChanged) data.runs - preset.id else data.runs,
@@ -175,7 +171,11 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
             presets = presets,
             selected = preset,
             run = run,
-            snapshot = TimerSnapshot.of(preset, run.elapsedMillis(nowRealtimeMillis)),
+            snapshot = TimerSnapshot.of(
+                preset = preset,
+                elapsedMillis = run.elapsedMillis(nowRealtimeMillis),
+                runningForMillis = run.runningForMillis(nowRealtimeMillis),
+            ),
             activeRuns = runs.mapValues { (_, state) -> state.status },
         )
     }

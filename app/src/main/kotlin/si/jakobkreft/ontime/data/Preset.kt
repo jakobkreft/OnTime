@@ -11,6 +11,8 @@ data class Preset(
     val totalMillis: Long,
     val yellowMillis: Long,
     val redMillis: Long,
+    /** Whole minutes only while the timer runs. The seconds come back whenever it is paused. */
+    val hideSeconds: Boolean = false,
 ) {
     /**
      * The warnings are "time remaining", so both must fall inside the run and red must not come
@@ -20,6 +22,12 @@ data class Preset(
         get() = totalMillis in 1..DurationText.MAX_MILLIS &&
             yellowMillis in 0 until totalMillis &&
             redMillis in 0..yellowMillis
+
+    /** Whether a run measured against [other] still means the same thing against this preset. */
+    fun hasSameTimingAs(other: Preset): Boolean =
+        totalMillis == other.totalMillis &&
+            yellowMillis == other.yellowMillis &&
+            redMillis == other.redMillis
 
     companion object {
         const val DEFAULT_TOTAL_MILLIS = 25L * 60 * 1000
@@ -51,6 +59,12 @@ data class RunState(
         RunStatus.RUNNING -> accumulatedMillis + (nowRealtimeMillis - startedAtRealtimeMillis)
         RunStatus.PAUSED -> accumulatedMillis
         RunStatus.IDLE -> 0L
+    }
+
+    /** How long the timer has counted since it was last started or resumed; zero otherwise. */
+    fun runningForMillis(nowRealtimeMillis: Long): Long = when (status) {
+        RunStatus.RUNNING -> (nowRealtimeMillis - startedAtRealtimeMillis).coerceAtLeast(0)
+        else -> 0L
     }
 
     val isActive: Boolean get() = status != RunStatus.IDLE

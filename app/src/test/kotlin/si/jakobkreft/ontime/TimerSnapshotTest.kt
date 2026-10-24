@@ -5,6 +5,8 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import si.jakobkreft.ontime.data.Preset
+import si.jakobkreft.ontime.data.RunState
+import si.jakobkreft.ontime.data.RunStatus
 import si.jakobkreft.ontime.domain.Phase
 import si.jakobkreft.ontime.domain.TimerSnapshot
 
@@ -86,6 +88,45 @@ class TimerSnapshotTest {
     @Test
     fun `negative elapsed is treated as not started`() {
         assertEquals(25 * 60_000L, at(-5_000).remainingMillis)
+    }
+
+    @Test
+    fun `seconds stay on screen unless the preset hides them`() {
+        assertFalse(TimerSnapshot.of(talk, 60_000L, runningForMillis = 60_000L).secondsHidden)
+    }
+
+    @Test
+    fun `hidden seconds still show for the first moments of every start and resume`() {
+        val quiet = talk.copy(hideSeconds = true)
+        val shownFor = TimerSnapshot.SECONDS_SHOWN_AFTER_START_MILLIS
+        assertFalse(TimerSnapshot.of(quiet, 0, runningForMillis = 0).secondsHidden)
+        assertFalse(TimerSnapshot.of(quiet, 600_000L, runningForMillis = shownFor - 1).secondsHidden)
+        assertTrue(TimerSnapshot.of(quiet, 600_000L, runningForMillis = shownFor).secondsHidden)
+    }
+
+    @Test
+    fun `hidden seconds come back while paused`() {
+        val quiet = talk.copy(hideSeconds = true)
+        assertFalse(TimerSnapshot.of(quiet, 600_000L, runningForMillis = 0).secondsHidden)
+    }
+
+    @Test
+    fun `running time restarts on every resume and is zero while held`() {
+        val resumed = RunState(
+            status = RunStatus.RUNNING,
+            startedAtRealtimeMillis = 10_000L,
+            accumulatedMillis = 60_000L,
+        )
+        assertEquals(2_000L, resumed.runningForMillis(12_000L))
+        assertEquals(62_000L, resumed.elapsedMillis(12_000L))
+        assertEquals(0L, resumed.copy(status = RunStatus.PAUSED).runningForMillis(12_000L))
+        assertEquals(0L, RunState().runningForMillis(12_000L))
+    }
+
+    @Test
+    fun `display choices never count as a change of timing`() {
+        assertTrue(talk.copy(name = "Keynote", hideSeconds = true).hasSameTimingAs(talk))
+        assertFalse(talk.copy(redMillis = 4 * 60_000L).hasSameTimingAs(talk))
     }
 
     @Test

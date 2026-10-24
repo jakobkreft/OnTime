@@ -33,6 +33,8 @@ Try it in a browser first: [live demo](https://jakobkreft.github.io/Projects/Pre
 - **Three durations per timer** — total time, plus yellow and red warnings set as the time remaining.
 - **Sharp colour changes**, readable from across a room. No fades, no gradients.
 - **Overtime clock** that keeps running past zero.
+- **Hide seconds** on any timer for a calmer clock — whole minutes while it runs, and the seconds
+  back the moment you pause.
 - **Named timers**, as many as you need, in a list you can duplicate and delete from.
 - **Full-screen clock** in landscape — tap the clock, or the expand icon, for the time and nothing else. Tap anywhere to come back.
 - **The screen stays on** while a timer is on screen.

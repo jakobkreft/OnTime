@@ -21,9 +21,22 @@ data class TimerSnapshot(
     /** 0f at the start, 1f at zero and beyond. */
     val progress: Float,
     val isOvertime: Boolean,
+    /** Whether the clock shows whole minutes only, with its seconds covered. */
+    val secondsHidden: Boolean = false,
 ) {
     companion object {
-        fun of(preset: Preset, elapsedMillis: Long): TimerSnapshot {
+        /**
+         * How long the seconds stay on screen after every start and resume: just long enough to
+         * see the clock tick once, so nobody has to wonder whether it is running.
+         */
+        const val SECONDS_SHOWN_AFTER_START_MILLIS = 1_000L
+
+        /**
+         * [runningForMillis] is the time since the run was last started or resumed, and zero while
+         * it is paused or idle. It is measured from the run itself rather than from when the
+         * screen appeared, so a rotation never brings the seconds back.
+         */
+        fun of(preset: Preset, elapsedMillis: Long, runningForMillis: Long = 0L): TimerSnapshot {
             val elapsed = elapsedMillis.coerceAtLeast(0)
             val left = preset.totalMillis - elapsed
             val isOvertime = left <= 0L
@@ -45,7 +58,10 @@ data class TimerSnapshot(
                 else -> (elapsed.toFloat() / preset.totalMillis).coerceIn(0f, 1f)
             }
 
-            return TimerSnapshot(phase, remaining, overtime, progress, isOvertime)
+            val secondsHidden =
+                preset.hideSeconds && runningForMillis >= SECONDS_SHOWN_AFTER_START_MILLIS
+
+            return TimerSnapshot(phase, remaining, overtime, progress, isOvertime, secondsHidden)
         }
     }
 }

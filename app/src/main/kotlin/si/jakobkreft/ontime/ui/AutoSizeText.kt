@@ -1,7 +1,6 @@
 package si.jakobkreft.ontime.ui
 
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -14,7 +13,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
 /**
- * Draws [text] as large as it will fit, sized so that [measureText] would also fit.
+ * Finds the largest font size at which [measureText] fits, and hands [content] the [style] at that
+ * size to draw the live text with.
  *
  * Sizing against a fixed reference string rather than the live one is the point: a countdown that
  * sized itself would jump every time a digit dropped, which is exactly the moment a speaker is
@@ -22,12 +22,12 @@ import androidx.compose.ui.unit.sp
  */
 @Composable
 fun AutoSizeText(
-    text: String,
     measureText: String,
     style: TextStyle,
     modifier: Modifier = Modifier,
     minFontSize: TextUnit = 24.sp,
     maxFontSize: TextUnit = 240.sp,
+    content: @Composable (fitted: TextStyle) -> Unit,
 ) {
     BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
         val measurer = rememberTextMeasurer()
@@ -55,12 +55,7 @@ fun AutoSizeText(
             smallest.sp
         }
 
-        Text(
-            text = text,
-            style = style.copy(fontSize = fontSize),
-            maxLines = 1,
-            softWrap = false,
-        )
+        content(style.copy(fontSize = fontSize))
     }
 }
 
