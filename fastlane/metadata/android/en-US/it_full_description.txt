@@ -1,0 +1,11 @@
+OnTime è un'app semplice per gestire il tempo durante eventi dal vivo, presentazioni e discorsi. Fornisce avvisi chiari e codificati a colori per aiutare i relatori a rimanere concentrati.
+
+Funzionalità:
+- Timer: Imposta il tempo totale, la durata dell'avviso giallo e la durata dell'avviso rosso.
+- Avvisi colorati come un semaforo:
+- Verde: Tempo rimanente.
+- Giallo: Fase di avviso.
+- Rosso: Tempo critico o fuori tempo.
+- Pausa e ripresa
+- Timer fuori tempo: Mostra il tempo eccedente il tempo impostato.
+- Impostazioni salvate: Mantiene le preferenze tra le sessioni.
